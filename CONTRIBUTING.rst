@@ -10,7 +10,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/tu-graz-library/invenio-catalouge-marc21/issues.
+Report bugs at https://github.com/tu-graz-library/invenio-catalogue-marc21/issues.
 
 If you are reporting a bug, please include:
 
@@ -33,15 +33,15 @@ is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-invenio-catalouge-marc21 could always use more documentation, whether as part of the
-official invenio-catalouge-marc21 docs, in docstrings, or even on the web in blog posts,
+invenio-catalogue-marc21 could always use more documentation, whether as part of the
+official invenio-catalogue-marc21 docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
 The best way to send feedback is to file an issue at
-https://github.com/tu-graz-library/invenio-catalouge-marc21/issues.
+https://github.com/tu-graz-library/invenio-catalogue-marc21/issues.
 
 If you are proposing a feature:
 
@@ -53,14 +53,14 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `invenio-catalouge-marc21` for local development.
+Ready to contribute? Here's how to set up `invenio-catalogue-marc21` for local development.
 
-1. Fork the `tu-graz-library/invenio-catalouge-marc21` repo on GitHub.
+1. Fork the `tu-graz-library/invenio-catalogue-marc21` repo on GitHub.
 2. Clone your fork locally:
 
    .. code-block:: console
 
-      $ git clone git@github.com:your_name_here/invenio-catalouge-marc21.git
+      $ git clone git@github.com:your_name_here/invenio-catalogue-marc21.git
 
 3. Install your local copy into a virtualenv. Assuming you have
    virtualenvwrapper installed, this is how you set up your fork for local
@@ -68,8 +68,8 @@ Ready to contribute? Here's how to set up `invenio-catalouge-marc21` for local d
 
    .. code-block:: console
 
-      $ mkvirtualenv invenio-catalouge-marc21
-      $ cd invenio-catalouge-marc21/
+      $ mkvirtualenv invenio-catalogue-marc21
+      $ cd invenio-catalogue-marc21/
       $ pip install -e .[all]
 
 4. Create a branch for local development:
@@ -114,5 +114,5 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring.
 3. The pull request should work for Python 3.6, 3.7, 3.8 and 3.9. Check
-   https://github.com/inveniosoftware/tu-graz-library/invenio-catalouge-marc21/actions?query=event%3Apull_request
+   https://github.com/inveniosoftware/tu-graz-library/invenio-catalogue-marc21/actions?query=event%3Apull_request
    and make sure that the tests pass for all supported Python versions.

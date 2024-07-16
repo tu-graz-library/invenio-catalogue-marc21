@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2024 Graz University of Technology.
 #
-# invenio-catalouge-marc21 is free software; you can redistribute it and/or
+# invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
 # details.
 
@@ -26,8 +26,8 @@
 [main]
 host = https://www.transifex.com
 
-[invenio.invenio-catalouge-marc21-messages]
-file_filter = invenio_catalouge_marc21/translations/<lang>/LC_MESSAGES/messages.po
-source_file = invenio_catalouge_marc21/translations/messages.pot
+[invenio.invenio-catalogue-marc21-messages]
+file_filter = invenio_catalogue_marc21/translations/<lang>/LC_MESSAGES/messages.po
+source_file = invenio_catalogue_marc21/translations/messages.pot
 source_lang = en
 type = PO

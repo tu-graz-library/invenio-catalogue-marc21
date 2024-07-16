@@ -2,13 +2,13 @@
 #
 # Copyright (C) 2024 Graz University of Technology.
 #
-# invenio-catalouge-marc21 is free software; you can redistribute it and/or
+# invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
 # details.
 
 """Sphinx configuration."""
 
-from invenio_catalouge_marc21 import __version__
+from invenio_catalogue_marc21 import __version__
 
 # -- General configuration ------------------------------------------------
 
@@ -44,7 +44,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = "invenio-catalouge-marc21"
+project = "invenio-catalogue-marc21"
 copyright = "2024, Graz University of Technology"
 author = "Graz University of Technology"
 
@@ -107,13 +107,13 @@ html_theme = "alabaster"
 html_theme_options = {
     "description": "Invenio module link multiple marc21 modules",
     "github_user": "inveniosoftware",
-    "github_repo": "invenio-catalouge-marc21",
+    "github_repo": "invenio-catalogue-marc21",
     "github_button": False,
     "github_banner": True,
     "show_powered_by": False,
     "extra_nav_links": {
-        "invenio-catalouge-marc21@GitHub": ("https://github.com/tu-graz-library/invenio-catalouge-marc21"),
-        "invenio-catalouge-marc21@PyPI": ("https://pypi.python.org/pypi/invenio-catalouge-marc21/"),
+        "invenio-catalogue-marc21@GitHub": ("https://github.com/tu-graz-library/invenio-catalogue-marc21"),
+        "invenio-catalogue-marc21@PyPI": ("https://pypi.python.org/pypi/invenio-catalogue-marc21/"),
     },
 }
 
@@ -218,7 +218,7 @@ html_sidebars = {
 # html_search_scorer = "scorer.js"
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "invenio-catalouge-marc21_namedoc"
+htmlhelp_basename = "invenio-catalogue-marc21_namedoc"
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -239,8 +239,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "invenio-catalouge-marc21.tex",
-        "invenio-catalouge-marc21 Documentation",
+        "invenio-catalogue-marc21.tex",
+        "invenio-catalogue-marc21 Documentation",
         "Graz University of Technology",
         "manual",
     ),
@@ -273,8 +273,8 @@ latex_documents = [
 man_pages = [
     (
         master_doc,
-        "invenio-catalouge-marc21",
-        "invenio-catalouge-marc21 Documentation",
+        "invenio-catalogue-marc21",
+        "invenio-catalogue-marc21 Documentation",
         [author],
         1,
     ),
@@ -291,10 +291,10 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        "invenio-catalouge-marc21",
-        "invenio-catalouge-marc21 Documentation",
+        "invenio-catalogue-marc21",
+        "invenio-catalogue-marc21 Documentation",
         author,
-        "invenio-catalouge-marc21",
+        "invenio-catalogue-marc21",
         "Invenio module link multiple marc21 modules",
         "Miscellaneous",
     ),

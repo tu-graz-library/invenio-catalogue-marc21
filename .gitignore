@@ -1,5 +1,15 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of Invenio.
+#
+# Copyright (C) 2020 Graz University of Technology.
+#
+# Invenio-Records-Marc21 is free software; you can redistribute it and/or
+# modify it under the terms of the MIT License; see LICENSE file for more
+# details.
+
 # Byte-compiled / optimized / DLL files
-__pycache__/
+__pycache__/**
 *.py[cod]
 
 # Idea software family
@@ -10,6 +20,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+venv/
 env/
 build/
 develop-eggs/
@@ -25,9 +36,6 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-Pipfile
-Pipfile.lock
-pyproject.toml
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -63,3 +71,15 @@ target/
 
 # Vim swapfiles
 .*.sw?
+
+# node modules
+**/*/node_modules
+node_modules
+0
+
+# vscode
+.vscode/
+
+# node modules
+**/*/node_modules
+node_modules
