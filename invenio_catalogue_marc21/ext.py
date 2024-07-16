@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2024 Graz University of Technology.
 #
-# invenio-catalouge-marc21 is free software; you can redistribute it and/or
+# invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
 # details.
 
@@ -13,8 +13,8 @@ from invenio_i18n import gettext as _
 from . import config
 
 
-class InvenioCatalougeMarc21(object):
-    """invenio-catalouge-marc21 extension."""
+class InvenioCatalogueMarc21(object):
+    """invenio-catalogue-marc21 extension."""
 
     def __init__(self, app=None):
         """Extension initialization."""
@@ -28,16 +28,23 @@ class InvenioCatalougeMarc21(object):
     def init_app(self, app):
         """Flask application initialization."""
         self.init_config(app)
-        app.extensions["invenio-catalouge-marc21"] = self
+        app.extensions["invenio-catalogue-marc21"] = self
 
     def init_config(self, app):
         """Initialize configuration."""
         # Use theme's base template if theme is installed
-        if "BASE_TEMPLATE" in app.config:
-            app.config.setdefault(
-                "MARC21_CATALOUGE_BASE_TEMPLATE",
-                app.config["BASE_TEMPLATE"],
-            )
         for k in dir(config):
-            if k.startswith("MARC21_CATALOUGE_"):
+            if k.startswith("MARC21_CATALOGUE_"):
                 app.config.setdefault(k, getattr(config, k))
+
+    def service_configs(self, app):
+        """Customized service configs."""
+        pass
+
+    def init_services(self, app):
+        """Initialize services."""
+        pass
+
+    def init_resources(self, app):
+        """Initialize resources."""
+        pass

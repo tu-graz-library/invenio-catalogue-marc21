@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2024 Graz University of Technology.
 #
-# invenio-catalouge-marc21 is free software; you can redistribute it and/or
+# invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
 # details.
 
@@ -11,8 +11,13 @@
 # TODO: This is an example file. Remove it if your package does not use any
 # extra configuration variables.
 
-MARC21_CATALOUGE_DEFAULT_VALUE = "foobar"
-"""Default value for the application."""
-
-MARC21_CATALOUGE_BASE_TEMPLATE = "invenio_catalouge_marc21/base.html"
+MARC21_CATALOGUE_BASE_TEMPLATE = "invenio_catalogue_marc21/base.html"
 """Default base template for the demo page."""
+
+
+MARC21_CATALOGUE_UI_ENDPOINTS = {
+    "record-detail": "/<pid_value>",
+    "deposit-create": "/uploads/new",
+    "deposit-edit": "/uploads/<pid_value>",
+}
+"""UI endpoints for invenio-catalogue-marc21."""

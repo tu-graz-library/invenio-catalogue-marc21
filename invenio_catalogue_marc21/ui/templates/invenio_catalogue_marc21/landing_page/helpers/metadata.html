@@ -1,0 +1,50 @@
+{% macro show_authors(authors) %}
+  {% for author in authors %}
+  {% set idx = loop %}
+    {{author.get("a")[0]}}{% if not loop.last %};{% endif %}  
+  {% endfor %}
+{%- endmacro %}
+
+<div class="ui raised card fluid">
+  <div class="content">
+    <div class="description">
+      {% set description = metadata.get('description') %}
+      {% if description %}
+      <p>{{ description }}</p>    
+      {% endif %}        
+    </div>      
+    <div class="ui grid metadata-grid">
+      {% if metadata["authors"] %}
+      <div class="label">{{_('Authors')}}:</div>
+      <div>{{ show_authors(metadata["authors"]) }}</div>
+      {% endif %}
+      <div class="label">{{_('DOI')}}:</div>
+      <div ><a href="http://dx.doi.org/10.3217/978-3-85125-582-9">10.3217/978-3-85125-582-9</a></div>
+      
+      <div class="label">{{_('Persistent Identifier')}}:</div>
+      <div><a href="https://doi.org/10.3217/978-3-85125-582-9">https://doi.org/10.3217/978-3-85125-582-9</a></div>
+      
+      <div class="label">{{_('Description')}}:</div>
+      <div>1 Online-Ressource (72 Seiten)</div>
+      
+      <div class="label">{{_('Licence')}}:</div>
+      <div>CC BY-NC-ND</div>
+      
+      <div class="label">{{_('ISBN')}}:</div>
+      <div>9783851255829</div>
+    </div>
+    
+  </div>
+  {% if files and files['enabled']%}
+  <div class="extra content">
+    
+    {% for file in files["entries"] %} 
+    <a href="{{file['links']['content']}}" download="{{ file['key'] }}">
+      <i class="download icon"></i>
+      Download {{file['key']}} [{{ file['size'] | format_file_size  }}]
+    </a>
+    {% endfor %}
+    
+  </div>
+  {% endif %}
+</div>
