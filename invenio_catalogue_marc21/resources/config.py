@@ -33,12 +33,12 @@ record_ui_routes = {
     "search": "/search",
     "list": "",
     "item": "/<pid_value>",
-    #"item-versions": "/<pid_value>/versions",
-    #"item-latest": "/<pid_value>/versions/latest",
+    # "item-versions": "/<pid_value>/versions",
+    # "item-latest": "/<pid_value>/versions/latest",
     "item-draft": "/<pid_value>/draft",
     "item-publish": "/<pid_value>/draft/actions/publish",
-    #"item-files-import": "/<pid_value>/draft/actions/files-import",
-    #"user-prefix": "/user",
+    # "item-files-import": "/<pid_value>/draft/actions/files-import",
+    # "user-prefix": "/user",
 }
 
 

@@ -40,4 +40,3 @@ def record_detail(record=None, files=None, pid_value=None, is_preview=False):
         is_preview=is_preview,
         is_draft=record._record.is_draft,
     )
-
