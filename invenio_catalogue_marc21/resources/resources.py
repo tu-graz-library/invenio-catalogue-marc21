@@ -72,11 +72,13 @@ class Marc21RecordResource(RecordResource):
             )
 
         return rules
+
     def convert_metadata(self, data):
         """Convert metadata to a dict."""
         metadata = Marc21Metadata()
         metadata.xml = data
         return metadata.json.get("metadata", {})
+
     @request_data
     @response_handler()
     def create(self):

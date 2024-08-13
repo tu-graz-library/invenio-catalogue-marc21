@@ -14,7 +14,6 @@ from invenio_records_marc21.services import Marc21RecordFilesService, Marc21Meta
 from invenio_records_resources.services.uow import unit_of_work
 
 
-
 class Marc21CatalogueService(Marc21RecordFilesService):
     """Marc21 record service class."""
 

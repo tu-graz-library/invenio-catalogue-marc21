@@ -112,8 +112,12 @@ html_theme_options = {
     "github_banner": True,
     "show_powered_by": False,
     "extra_nav_links": {
-        "invenio-catalogue-marc21@GitHub": ("https://github.com/tu-graz-library/invenio-catalogue-marc21"),
-        "invenio-catalogue-marc21@PyPI": ("https://pypi.python.org/pypi/invenio-catalogue-marc21/"),
+        "invenio-catalogue-marc21@GitHub": (
+            "https://github.com/tu-graz-library/invenio-catalogue-marc21"
+        ),
+        "invenio-catalogue-marc21@PyPI": (
+            "https://pypi.python.org/pypi/invenio-catalogue-marc21/"
+        ),
     },
 }
 
