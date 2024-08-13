@@ -11,14 +11,15 @@
 # TODO: This is an example file. Remove it if you do not need it, including
 # the templates and static folders as well as the test case.
 
-from flask import Blueprint, render_template
-from invenio_i18n import gettext as _
+from flask import Blueprint, abort, current_app, render_template, request, url_for
 from flask_login import current_user, login_required
+from invenio_i18n import gettext as _
+from invenio_records_marc21.resources.serializers.ui import Marc21UIJSONSerializer
 from invenio_records_marc21.ui.records.decorators import (
     pass_record_files,
     pass_record_or_draft,
 )
-from invenio_records_marc21.resources.serializers.ui import Marc21UIJSONSerializer
+from invenio_stats.proxies import current_stats
 
 
 @login_required
@@ -27,6 +28,10 @@ from invenio_records_marc21.resources.serializers.ui import Marc21UIJSONSerializ
 def record_detail(record=None, files=None, pid_value=None, is_preview=False):
     """Record detail page (aka landing page)."""
     files_dict = None if files is None else files.to_dict()
+
+    emitter = current_stats.get_event_emitter("marc21-record-view")
+    if record is not None and emitter is not None:
+        emitter(current_app, record=record._record, via_api=False)
 
     # emit a record view stats event
     return render_template(
