@@ -9,13 +9,8 @@
 """Invenio module link multiple marc21 modules."""
 
 
-from .config import (
-    Marc21CatalogueServiceConfig,
-)
-
-from .services import (
-    Marc21CatalogueService,
-)
+from .config import Marc21CatalogueServiceConfig
+from .services import Marc21CatalogueService
 
 __all__ = (
     "Marc21CatalogueService",
