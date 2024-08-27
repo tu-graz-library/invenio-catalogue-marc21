@@ -12,24 +12,24 @@
 from flask import g
 from flask_resources import resource_requestctx, response_handler, route
 from invenio_drafts_resources.resources import RecordResource
+from invenio_records_marc21.services.record.metadata import Marc21Metadata
 from invenio_records_resources.resources.records.resource import (
     request_data,
     request_headers,
     request_view_args,
 )
 
-from ..services.record.metadata import Marc21Metadata
 from . import config
 
 
 #
 # Records
 #
-class Marc21RecordResource(RecordResource):
+class Marc21CatalogueRecordResource(RecordResource):
     """Bibliographic record resource."""
 
     config_name = "MARC21_RECORDS_RECORD_CONFIG"
-    default_config = config.Marc21RecordResourceConfig
+    default_config = config.Marc21CatalogueRecordResourceConfig
 
     def create_url_rules(self):
         """Create the URL rules for the record resource."""
@@ -49,28 +49,11 @@ class Marc21RecordResource(RecordResource):
             route("GET", p(routes["item"]), self.read),
             route("PUT", p(routes["item"]), self.update),
             route("DELETE", p(routes["item"]), self.delete),
-            route("GET", p(routes["item-versions"]), self.search_versions),
-            route("POST", p(routes["item-versions"]), self.new_version),
-            route("GET", p(routes["item-latest"]), self.read_latest),
-            route("GET", p(routes["item-draft"]), self.read_draft),
             route("POST", p(routes["item-draft"]), self.edit),
             route("PUT", p(routes["item-draft"]), self.update_draft),
             route("DELETE", p(routes["item-draft"]), self.delete_draft),
             route("POST", p(routes["item-publish"]), self.publish),
-            # User Dashboard routes
-            route("GET", s(routes["user-prefix"]), self.search_user_records),
         ]
-
-        if self.service.draft_files:
-            rules.append(
-                route(
-                    "POST",
-                    p(routes["item-files-import"]),
-                    self.import_files,
-                    apply_decorators=False,
-                )
-            )
-
         return rules
 
     def convert_metadata(self, data):
@@ -82,7 +65,10 @@ class Marc21RecordResource(RecordResource):
     @request_data
     @response_handler()
     def create(self):
-        """Create an item."""
+        """Create an item.
+
+        POST /catalogue/
+        """
 
         data = resource_requestctx.data
         data["metadata"] = self.convert_metadata(data)
@@ -99,7 +85,7 @@ class Marc21RecordResource(RecordResource):
     def update_draft(self):
         """Update a draft.
 
-        PUT /publications/:pid_value/draft
+        PUT /catalogue/:pid_value/draft
         """
         metadata = Marc21Metadata()
         data = resource_requestctx.data
@@ -113,21 +99,21 @@ class Marc21RecordResource(RecordResource):
         return item.to_dict(), 200
 
 
-class Marc21ParentRecordLinksResource(RecordResource):
-    """Secret links resource."""
+# class Marc21ParentRecordLinksResource(RecordResource):
+#     """Secret links resource."""
 
-    def create_url_rules(self):
-        """Create the URL rules for the record resource."""
+#     def create_url_rules(self):
+#         """Create the URL rules for the record resource."""
 
-        def p(route):
-            """Prefix a route with the URL prefix."""
-            return f"{self.config.url_prefix}{route}"
+#         def p(route):
+#             """Prefix a route with the URL prefix."""
+#             return f"{self.config.url_prefix}{route}"
 
-        routes = self.config.routes
-        return [
-            route("GET", p(routes["list"]), self.search),
-            route("POST", p(routes["list"]), self.create),
-            route("GET", p(routes["item"]), self.read),
-            route("PUT", p(routes["item"]), self.update),
-            route("DELETE", p(routes["item"]), self.delete),
-        ]
+#         routes = self.config.routes
+#         return [
+#             route("GET", p(routes["list"]), self.search),
+#             route("POST", p(routes["list"]), self.create),
+#             route("GET", p(routes["item"]), self.read),
+#             route("PUT", p(routes["item"]), self.update),
+#             route("DELETE", p(routes["item"]), self.delete),
+#         ]

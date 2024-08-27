@@ -9,19 +9,10 @@
 """Catalogue service component for ."""
 
 
-from .config import (
-    Marc21DraftFilesResourceConfig,
-    Marc21ParentRecordLinksResourceConfig,
-    Marc21RecordFilesResourceConfig,
-    Marc21RecordResourceConfig,
-)
-from .resources import Marc21ParentRecordLinksResource, Marc21RecordResource
+from .config import Marc21CatalogueRecordResourceConfig
+from .resources import Marc21CatalogueRecordResource
 
 __all__ = (
-    "Marc21RecordResource",
-    "Marc21DraftFilesResourceConfig",
-    "Marc21RecordFilesResourceConfig",
-    "Marc21RecordResourceConfig",
-    "Marc21ParentRecordLinksResourceConfig",
-    "Marc21ParentRecordLinksResource",
+    "Marc21CatalogueRecordResourceConfig",
+    "Marc21CatalogueRecordResource",
 )

@@ -12,11 +12,15 @@
 import marshmallow as ma
 from flask_resources import JSONDeserializer, RequestBodyParser, ResponseHandler
 from invenio_drafts_resources.resources import RecordResourceConfig
-from invenio_records_resources.resources.files import FileResourceConfig
+from invenio_records_marc21.resources.serializers import (
+    Marc21JSONSerializer,
+    Marc21XMLSerializer,
+)
+from invenio_records_marc21.resources.serializers.ui import (
+    Marc21UIJSONSerializer,
+    Marc21UIXMLSerializer,
+)
 from invenio_records_resources.resources.records.args import SearchRequestArgsSchema
-
-from .serializers import Marc21JSONSerializer, Marc21XMLSerializer
-from .serializers.ui import Marc21UIJSONSerializer, Marc21UIXMLSerializer
 
 record_serializer = {
     "application/json": ResponseHandler(Marc21JSONSerializer()),
@@ -33,19 +37,15 @@ record_ui_routes = {
     "search": "/search",
     "list": "",
     "item": "/<pid_value>",
-    # "item-versions": "/<pid_value>/versions",
-    # "item-latest": "/<pid_value>/versions/latest",
     "item-draft": "/<pid_value>/draft",
     "item-publish": "/<pid_value>/draft/actions/publish",
-    # "item-files-import": "/<pid_value>/draft/actions/files-import",
-    # "user-prefix": "/user",
 }
 
 
-class Marc21RecordResourceConfig(RecordResourceConfig):
+class Marc21CatalogueRecordResourceConfig(RecordResourceConfig):
     """Marc21 Record resource configuration."""
 
-    blueprint_name = "marc21_records"
+    blueprint_name = "marc21_catalogue_records"
     url_prefix = url_prefix
 
     default_accept_mimetype = "application/json"
