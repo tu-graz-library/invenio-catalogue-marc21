@@ -38,15 +38,17 @@ class SwitchLinks:
             if condition(obj, ctx):
                 return template.expand(obj, ctx)
 
+
 def is_catalogue(record, ctx):
     """Shortcut for links to determine if record is a catalogue."""
     resource_type = record.metadata.get("fields", {}).get("970", [{"subfields": {}}])
     for resource in resource_type:
         subfields = resource.get("subfields", {})
-        if subfields.get("d",[""])[0] == "CATALOGUE":
+        if subfields.get("d", [""])[0] == "CATALOGUE":
             return True
-    return False 
-           
+    return False
+
+
 ServiceLinks = {
     "self": SwitchLinks(
         cond=[
@@ -121,5 +123,3 @@ ServiceLinks = {
     ),
     "versions": RecordLink("{+api}/publications/{id}/versions"),
 }
-
-
