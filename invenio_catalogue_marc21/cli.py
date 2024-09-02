@@ -41,17 +41,6 @@ def get_user_identity(user_id):
     return identity
 
 
-def fake_access_right():
-    """Generates a fake access_right."""
-    _type = random.choice(list(AccessStatusEnum)).value
-    if (
-        _type == AccessStatusEnum.METADATA_ONLY.value
-        or _type == AccessStatusEnum.OPEN.value
-    ):
-        return "public"
-    return _type
-
-
 def fake_feature_date(days=365):
     """Generates a fake feature_date."""
     start_date = arrow.utcnow().datetime
@@ -63,21 +52,7 @@ def fake_feature_date(days=365):
 def create_fake_record():
     """Create records for demo purposes in backend."""
     data = create_fake_data()
-    metadata_access = fake_access_right()
-    data_access = {
-        "files": "public",
-        "record": metadata_access,
-    }
-    if metadata_access == AccessStatusEnum.EMBARGOED.value:
-        embargo = {
-            "embargo": {
-                "until": fake_feature_date(),
-                "active": True,
-                "reason": "Because I can!",
-            }
-        }
-        data_access.update(embargo)
-        data_access["record"] = AccessStatusEnum.RESTRICTED.value
+    data_access = {"files": "public", "record": "public"}
     data["access"] = data_access
     create_marc21_record(data, data_access)
 

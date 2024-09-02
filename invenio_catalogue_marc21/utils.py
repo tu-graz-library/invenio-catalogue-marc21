@@ -9,9 +9,20 @@
 
 """Marc21 catalogue utils module."""
 
+from pathlib import Path
 from random import randint
 
 from faker import Faker
+from faker_file.base import DynamicTemplate
+from faker_file.contrib.pdf_file.reportlab_snippets import (
+    add_page_break,
+    add_paragraph,
+    add_picture,
+    add_table,
+)
+from faker_file.providers.pdf_file import PdfFileProvider
+from faker_file.providers.pdf_file.generators import reportlab_generator
+from faker_file.storages.filesystem import FileSystemStorage
 from flask_principal import Identity
 from invenio_access.permissions import any_user, authenticated_user, system_process
 from invenio_records_marc21.proxies import current_records_marc21
@@ -48,7 +59,7 @@ def create_fake_data():
 
     data_to_use = {
         "files": {
-            "enabled": False,
+            "enabled": True,
         },
         "pids": {},
         "metadata": {
@@ -212,10 +223,53 @@ def create_fake_data():
     return data_to_use
 
 
-def build_record_unique_id(doc):
-    """Build record unique identifier."""
-    doc["unique_id"] = "{0}_{1}".format(doc["recid"], doc["parent_recid"])
-    return doc
+from faker.generator import Generator
+
+
+def create_fake_file():
+    """Create a fake PDF file."""
+    FAKER = Faker()
+    FAKER.add_provider(PdfFileProvider)
+
+    content = FAKER.pdf_file(
+        pdf_generator_cls=reportlab_generator.ReportlabPdfGenerator,
+        content=DynamicTemplate(
+            [
+                (add_paragraph, {}),  # Add paragraph
+                (add_page_break, {}),  # Add page break
+                (add_picture, {}),  # Add picture
+                (add_page_break, {}),  # Add page break
+                (add_table, {}),  # Add table
+                (add_page_break, {}),  # Add page break
+            ]
+            * 5
+        ),
+        raw=True,
+    )
+
+    # Define the path to save the PDF file
+    output_file_path = Path("/tmp/output.pdf")
+
+    # Save the PDF content to a file
+    with open(output_file_path, "wb") as f:
+        f.write(content)
+
+    return output_file_path
+
+
+def add_file_to_record(recid, file_path):
+    """Add file to record."""
+    file_service = current_records_marc21.records_service._draft_files
+    filename = "Report.pdf"
+    data = [{"key": filename}]
+
+    with open(file_path, mode="rb") as file_pointer:
+        identity = system_identity()
+        file_service.init_files(id_=recid, identity=identity, data=data)
+        file_service.set_file_content(
+            id_=recid, file_key=filename, identity=identity, stream=file_pointer
+        )
+        file_service.commit_file(id_=recid, file_key=filename, identity=identity)
 
 
 def create_marc21_record(data, access):
@@ -226,6 +280,10 @@ def create_marc21_record(data, access):
         identity=system_identity(),
         access=access,
     )
+    # add fake file to record
+    file_path = create_fake_file()
+    add_file_to_record(draft.id, file_path)
+
     record = service.publish(id_=draft.id, identity=system_identity())
 
     return record
