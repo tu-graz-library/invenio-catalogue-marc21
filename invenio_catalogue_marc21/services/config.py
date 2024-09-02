@@ -9,8 +9,6 @@
 """Invenio module link multiple marc21 modules."""
 
 from invenio_records_marc21.services import Marc21RecordServiceConfig
-from invenio_i18n import gettext as _
-
 
 
 class Marc21CatalogueServiceConfig(Marc21RecordServiceConfig):

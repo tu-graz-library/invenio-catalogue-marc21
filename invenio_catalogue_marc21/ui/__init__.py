@@ -11,13 +11,14 @@
 from flask import Blueprint
 from invenio_pidstore.errors import PIDDeletedError, PIDDoesNotExistError
 from invenio_records_resources.services.errors import PermissionDeniedError
-from .filters import format_file_size
-from .views import record_detail
+
 from .errors import (
+    not_found_error,
     record_permission_denied_error,
     record_tombstone_error,
-    not_found_error,
 )
+from .filters import format_file_size
+from .views import record_detail
 
 
 #
