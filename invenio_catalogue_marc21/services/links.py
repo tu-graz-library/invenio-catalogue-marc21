@@ -40,16 +40,17 @@ class SwitchLinks:
 
 
 def is_catalogue(record, ctx):
-    """Shortcut for links to determine if record is a catalogue."""
-    resource_type = record.metadata.get("fields", {}).get("970", [{"subfields": {}}])
-    for resource in resource_type:
-        subfields = resource.get("subfields", {})
-        if subfields.get("d", [""])[0] == "CATALOGUE":
-            return True
+    """Shortcut for links to determine if record is a catalogue record."""
+    if hasattr(record, "is_catalogue"):
+        catalogue = record.is_catalogue
+    else:
+        catalogue = record.get("is_catalogue", False)
+    if catalogue:
+        return True
     return False
 
 
-ServiceLinks = {
+DefaultServiceLinks = {
     "self": SwitchLinks(
         cond=[
             (
@@ -118,8 +119,21 @@ ServiceLinks = {
     "latest": RecordLink("{+api}/publications/{id}/versions/latest"),
     "latest_html": RecordLink("{+ui}/publications/{id}/latest"),
     "draft": RecordLink("{+api}/publications/{id}/draft", when=is_record),
-    "publish": RecordLink(
-        "{+api}/publications/{id}/draft/actions/publish", when=is_draft
+    "publish": SwitchLinks(
+        cond=[
+            (
+                is_catalogue,
+                RecordLink(
+                    "{+api}/catalogue/{id}/draft/actions/publish", when=is_draft
+                ),
+            ),
+            (
+                is_record,
+                RecordLink(
+                    "{+api}/publications/{id}/draft/actions/publish", when=is_draft
+                ),
+            ),
+        ],
     ),
     "versions": RecordLink("{+api}/publications/{id}/versions"),
 }
