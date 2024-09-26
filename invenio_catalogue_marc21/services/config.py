@@ -9,14 +9,34 @@
 """Invenio module link multiple marc21 modules."""
 
 from invenio_records_marc21.services import Marc21RecordServiceConfig
+from invenio_records_resources.services.base.config import FromConfig
+
+from ..records import Marc21CatalogueDraft, Marc21CatalogueRecord
+from .components import DefaultRecordsComponents
+from .links import DefaultServiceLinks
+from .schemas import Marc21CatalogueSchema
 
 
 class Marc21CatalogueServiceConfig(Marc21RecordServiceConfig):
     """Marc21 record service config."""
 
+    # Record class
+    record_cls = Marc21CatalogueRecord
+    # Draft class
+    draft_cls = Marc21CatalogueDraft
     # Schemas
-    # schema = Marc21RecordSchema
+    schema = Marc21CatalogueSchema
     # schema_parent = Marc21ParentSchema
 
     schema_secret_link = None
     review = None
+
+    links_item = FromConfig(
+        "MARC21_RECORDS_SERVICE_LINKS",
+        default=DefaultServiceLinks,
+    )
+
+    components = FromConfig(
+        "MARC21_CATALOGUE_SERVICE_COMPONENTS",
+        default=DefaultRecordsComponents,
+    )

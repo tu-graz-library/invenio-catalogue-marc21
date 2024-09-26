@@ -17,13 +17,17 @@ from invenio_records_resources.services.uow import TaskOp
 class CatalogueComponent(ServiceComponent):
     """Service component for Catalogue."""
 
+    def create(self, identity, data=None, record=None, errors=None):
+        """Create handler."""
+        record.catalogue = data.get("catalogue", {})
+
     def read_draft(self, identity, draft=None):
         """Update draft handler."""
         pass
 
     def update_draft(self, identity, data=None, record=None, errors=None):
         """Update draft handler."""
-        pass
+        record.catalogue = data.get("catalogue", {})
 
     def delete_draft(self, identity, draft=None, record=None, force=False):
         """Delete draft handler."""
@@ -31,7 +35,7 @@ class CatalogueComponent(ServiceComponent):
 
     def edit(self, identity, draft=None, record=None):
         """Edit a record handler."""
-        pass
+        record.catalogue = draft.catalogue
 
     def new_version(self, identity, draft=None, record=None):
         """New version handler."""
@@ -39,7 +43,7 @@ class CatalogueComponent(ServiceComponent):
 
     def publish(self, identity, draft=None, record=None):
         """Publish handler."""
-        pass
+        record.catalogue = draft.catalogue
 
     def import_files(self, identity, draft=None, record=None):
         """Import files handler."""
