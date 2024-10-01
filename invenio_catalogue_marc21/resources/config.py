@@ -11,23 +11,24 @@
 
 import marshmallow as ma
 from flask_resources import JSONDeserializer, RequestBodyParser, ResponseHandler
+from flask_resources.serializers import JSONSerializer
 from invenio_drafts_resources.resources import RecordResourceConfig
-from invenio_records_marc21.resources.serializers import (
-    Marc21JSONSerializer,
-    Marc21XMLSerializer,
-)
-from invenio_records_marc21.resources.serializers.ui import (
-    Marc21UIJSONSerializer,
-    Marc21UIXMLSerializer,
-)
 from invenio_records_resources.resources.records.args import SearchRequestArgsSchema
 
+from .serializers import Marc21CatalogueXMLSerializer
+from .serializers.ui import (
+    Marc21CatalogueUIJSONSerializer,
+    Marc21CatalogueUIXMLSerializer,
+)
+
 record_serializer = {
-    "application/json": ResponseHandler(Marc21JSONSerializer()),
-    "application/marcxml": ResponseHandler(Marc21XMLSerializer()),
-    "application/vnd.inveniomarc21.v1+json": ResponseHandler(Marc21UIJSONSerializer()),
+    "application/json": ResponseHandler(JSONSerializer()),
+    "application/marcxml": ResponseHandler(Marc21CatalogueXMLSerializer()),
+    "application/vnd.inveniomarc21.v1+json": ResponseHandler(
+        Marc21CatalogueUIJSONSerializer()
+    ),
     "application/vnd.inveniomarc21.v1+marcxml": ResponseHandler(
-        Marc21UIXMLSerializer()
+        Marc21CatalogueUIXMLSerializer()
     ),
 }
 
@@ -37,6 +38,7 @@ record_ui_routes = {
     "search": "/search",
     "list": "",
     "item": "/<pid_value>",
+    "item-tree": "/<pid_value>/tree",
     "item-draft": "/<pid_value>/draft",
     "item-publish": "/<pid_value>/draft/actions/publish",
 }
