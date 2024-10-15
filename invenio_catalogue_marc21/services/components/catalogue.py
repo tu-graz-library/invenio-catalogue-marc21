@@ -8,10 +8,7 @@
 
 """Catalogue service component for ."""
 
-from copy import copy
-
 from invenio_drafts_resources.services.records.components import ServiceComponent
-from invenio_records_resources.services.uow import TaskOp
 
 
 class CatalogueComponent(ServiceComponent):
