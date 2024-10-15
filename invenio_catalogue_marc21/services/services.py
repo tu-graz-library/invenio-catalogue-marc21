@@ -15,7 +15,60 @@ from invenio_records_marc21.services import Marc21Metadata, Marc21RecordService
 from invenio_records_resources.services.uow import unit_of_work
 
 
-class Marc21CatalogueService(Marc21RecordService):
+class Marc21CatalogueMixin:
+    def _catalogue(self, identity, id_, expand=False, action="read"):
+        """Build a tree of linked records.
+
+
+
+        :param identity: Identity of user creating the record.
+        :param id_: Record PID value.
+        :param expand: Expand the tree.
+        :param include_deleted: Include deleted records.
+
+        """
+        record = self.record_cls.pid.resolve(id_)
+        self.require_permission(identity, action, record=record)
+
+        # Run components
+        for component in self.components:
+            if hasattr(component, "tree"):
+                component.read(identity, record=record)
+
+        return self.result_item(
+            self,
+            identity,
+            record,
+            links_tpl=self.links_item_tpl,
+            expandable_fields=self.expandable_fields,
+            nested_links_item=getattr(self.config, "nested_links_item", None),
+            expand=expand,
+        )
+
+    def catalogue(self, identity, id_, expand=False, include_deleted=False):
+        """Build a tree of linked records.
+
+
+
+        :param identity: Identity of user creating the record.
+        :param id_: Record PID value.
+        :param expand: Expand the tree.
+        :param include_deleted: Include deleted records.
+
+        """
+
+        record = self.record_cls.pid.resolve(id_)
+        catalogue = record.get("catalogue", {})
+        catalogue["root"] = self.read(identity, catalogue["root"], expand=False).to_dict()
+        catalogue["parent"] = self.read(identity, catalogue["parent"], expand=False).to_dict()
+        child_record = []
+        for child in catalogue["children"]: 
+            child_record.append(self.read(identity, child, expand=False).to_dict())
+        catalogue["children"] = child_record
+        return catalogue
+
+
+class Marc21CatalogueService(Marc21RecordService, Marc21CatalogueMixin):
     """Marc21 record service class."""
 
     @unit_of_work()
@@ -121,17 +174,3 @@ class Marc21CatalogueService(Marc21RecordService):
                 raise RecordDeletedException(record, result_item=result)
 
         return result
-
-    def tree(self, identity, id_, expand=False, include_deleted=False):
-        """Build a tree of linked records.
-
-
-
-        :param identity: Identity of user creating the record.
-        :param id_: Record PID value.
-        :param expand: Expand the tree.
-        :param include_deleted: Include deleted records.
-
-        """
-
-        pass
