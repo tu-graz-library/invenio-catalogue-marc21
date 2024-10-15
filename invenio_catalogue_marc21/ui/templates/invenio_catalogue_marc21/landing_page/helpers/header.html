@@ -1,0 +1,36 @@
+{#
+    Copyright (C) 2024 Graz University of Technology.
+  
+    invenio-catalogue-marc21 is free software; you can redistribute it and/or
+    modify it under the terms of the MIT License; see LICENSE file for more
+    details.
+#}
+
+<div class="left floated left aligned eight wide column">
+    <div class="twelve wide column">
+        <span class="ui" title="{{_('Created')}}">
+        {{ _("Created") }} {{ record.ui.created }}
+        </span>
+        <span class="label text-muted" title="{{_('Spacer')}}">
+        &nbsp;
+        </span>
+        <span class="label text-muted" title="{{_('Updated')}}">
+        {{ _("Updated") }} {{ record.ui.updated }}
+        </span>
+    </div>
+    </div>
+    <div class="right floated right aligned eight wide column">
+    {% if metadata.resource_type %}
+    <span class="ui label small neutral" title="{{ _('Resource type') }}">
+        {{ metadata.resource_type}}
+    </span>
+{% endif %}
+    <span class="ui label small access-status {{ record.ui.access_status.id }}"
+        title="{{ _('Access status') }}" data-tooltip="{{ record.ui.access_status.description_l10n }}"
+        data-inverted="">
+        {% if record.ui.access_status.icon %}
+        <i class="icon {{ record.ui.access_status.icon }}"></i>
+        {% endif %}
+        {{ record.ui.access_status.title_l10n }}
+    </span>
+</div>

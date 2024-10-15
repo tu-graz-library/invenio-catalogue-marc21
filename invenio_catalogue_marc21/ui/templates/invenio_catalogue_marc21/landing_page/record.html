@@ -15,70 +15,53 @@
 
 {% block head_title %}
 <title>
-  {% for title in metadata.get('titles') %}
-    {{title}}
-  {% endfor %}
+  {% if metadata.get("title_statement", {}).get('title') %}
+    {{ metadata.get("title_statement", {}).get('title') }}
+  {% endif %}
 </title>
 {% endblock head_title %}
 {%- block page_body %}
 
 <div class="ui container" id="marc21-catalogue-landing-page">
   <div class="ui relaxed grid">
-    <div class="one column row top-padded">
-      <article class="sixteen wide tablet sixteen wide computer column main-record-content">
-        {%- block record_body %}
+    <!-- Landing Page Header -->
+    
+    <div class="row">
+      {%- block record_header -%}
+      {%- include "invenio_catalogue_marc21/landing_page/helpers/header.html" %}
+      {%- endblock record_header -%}
+    </div>
+    
 
-        {%- block record_header -%}
+    <!-- Main Content -->
+    {%- block record_body %}
+    <div class="row">
+      {%- block record_title %}
+      <div class="twelve wide computer sixteen wide tablet column center aligned">
+          {%- include "invenio_catalogue_marc21/landing_page/helpers/title.html" %}
+      </div>
+      {%- endblock record_title %}
+    </div>
 
-        <div class="ui grid middle aligned">
-          <div class="one column row">
-            <div class="left floated left aligned column">
-              <div class="twelve wide column">
-                <span class="ui" title="{{_('Published date')}}">
-                  {{ _("Published in") }} {{ metadata.published }}
-                </span>
-                {%- if record.ui.version %}
-                <span class="label text-muted"> | Version {{ record.ui.version }}</span>
-                {% endif %}
-              </div>
-            </div>
-            <div class="right floated right aligned column">
-              {% if metadata.resource_type %}
-              <span class="ui label small neutral" title="{{ _('Resource type') }}">{{ metadata.resource_type
-                }}</span>
-              {% endif %}
-              <span class="ui label small access-status {{ record.ui.access_status.id }}"
-                title="{{ _('Access status') }}" data-tooltip="{{ record.ui.access_status.description_l10n }}"
-                data-inverted="">
-                {% if record.ui.access_status.icon %}
-                <i class="icon {{ record.ui.access_status.icon }}"></i>
-                {% endif %}
-                {{ record.ui.access_status.title_l10n }}
-              </span>
-            </div>
-          </div>
-        </div>
-        {%- endblock record_header -%}
-        
-        <div class="ui divider hidden"></div>
-        <div class="ui grid center aligned">
-        {%- block record_title -%}
-          <div class="sixteen wide column">
-            {%- include "invenio_catalogue_marc21/landing_page/helpers/title.html" %}
-          </div>
-          <div class="sixteen wide column">
-            {%- include "invenio_catalogue_marc21/landing_page/helpers/metadata.html" %}
-          </div>
-        {%- endblock record_title -%}
+    <div class="twelve wide computer sixteen wide tablet column">
+      {%- block record_metadata -%}
+          {%- include "invenio_catalogue_marc21/landing_page/helpers/metadata.html" %}
+      {%- endblock record_metadata -%}
 
-        {%- block record_content -%}
-        {%- endblock record_content -%}
+      {%- block record_files -%}
+        {%- include "invenio_records_marc21/landing_page/helpers/files.html" %}
+      {%- endblock record_files -%}
+    {%- endblock record_body %}
+    </div>
+    {%- block record_content -%}
       
-        </div>
-        {%- endblock record_body %}
-      </article>
+    <!-- Right Sidebar -->
+    <div class="four wide computer sixteen wide tablet column">
+      {%- include "invenio_catalogue_marc21/landing_page/helpers/chapters.html" %}
     </div>
   </div>
+  {%- endblock record_content -%}
+  
   <div class="ui divider hidden"></div>
   <div class="centered" id="jump-btn">
     <a style="cursor: pointer;" href="#">
@@ -93,5 +76,4 @@
 
 {%- block javascript %}
 {{ super() }}
-{{ webpack["invenio-records-marc21-landing-page.js"] }}
 {%- endblock javascript %}

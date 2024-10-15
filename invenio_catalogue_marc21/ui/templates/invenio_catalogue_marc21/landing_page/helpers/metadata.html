@@ -1,42 +1,69 @@
-{% macro show_authors(authors) %}
+{#
+  Copyright (C) 2024 Graz University of Technology.
+
+  invenio-catalogue-marc21 is free software; you can redistribute it and/or
+  modify it under the terms of the MIT License; see LICENSE file for more
+  details.
+#}
+
+{% macro show_authors(authors, delimiter="<br>") %}
   {% for author in authors %}
   {% set idx = loop %}
-    {{author.get("a")[0]}}{% if not loop.last %};{% endif %}  
+    {{show_author(author)}}{% if not loop.last %}{{ delimiter }}{% endif %}  
   {% endfor %}
 {%- endmacro %}
 
+{% macro show_author(author) %}
+    {{author.get("personal_name")}} 
+{%- endmacro %}
+
+{% set metadata = record.ui.metadata %}
 <div class="ui raised card fluid">
   <div class="content">
     <div class="description">
-      {% set description = metadata.get('description') %}
+      {% set description = metadata.get("physical_description", {}).get("extent") %}
       {% if description %}
       <p>{{ description }}</p>    
       {% endif %}        
     </div>      
     <div class="ui grid metadata-grid">
-      {% if metadata["authors"] %}
+      {% if "main_entry_personal_name" in metadata %}
       <div class="label">{{_('Authors')}}:</div>
-      <div>{{ show_authors(metadata["authors"]) }}</div>
+      <div>{{ show_author(metadata["main_entry_personal_name"]) }}
+      {% if "added_entry_personal_name" in metadata %}
+        <br>
+        {{ show_authors(metadata["added_entry_personal_name"]) }}
       {% endif %}
-      <div class="label">{{_('DOI')}}:</div>
-      <div ><a href="http://dx.doi.org/10.3217/978-3-85125-582-9">10.3217/978-3-85125-582-9</a></div>
+      </div>
+      {% endif %}
       
+      {% if metadata["main_entry_personal_name"] %}
       <div class="label">{{_('Persistent Identifier')}}:</div>
       <div><a href="https://doi.org/10.3217/978-3-85125-582-9">https://doi.org/10.3217/978-3-85125-582-9</a></div>
-      
+      {% endif %}
+
       <div class="label">{{_('Description')}}:</div>
       <div>1 Online-Ressource (72 Seiten)</div>
       
       <div class="label">{{_('Licence')}}:</div>
       <div>CC BY-NC-ND</div>
-      
+      {% if "standard_book_number" in ui %}
       <div class="label">{{_('ISBN')}}:</div>
-      <div>9783851255829</div>
+      <div>{{ metadata["standard_book_number"] }}<</div>
+      {% endif %}
+      {% if "publication_year" in ui %}
+      <div class="label">{{_('Publication year')}}:</div>
+      <div>{{ metadata["publication_year"] }}<</div>
+      {% endif %}
+      {% if "standard_book_number" in ui %}
+      <div class="label">{{_('ISBN')}}:</div>
+      <div>{{ metadata["standard_book_number"].get("standard_book_number", "") }}<</div>
+      {% endif %}
     </div>
     
   </div>
   {% if files and files['enabled']%}
-  <div class="extra content">
+  <div class="extra content center aligned">
     
     {% for file in files["entries"] %} 
     <a href="{{file['links']['content']}}" download="{{ file['key'] }}">
