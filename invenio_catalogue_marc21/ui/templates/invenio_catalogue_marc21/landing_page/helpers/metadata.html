@@ -9,7 +9,7 @@
 {% macro show_authors(authors, delimiter="<br>") %}
   {% for author in authors %}
   {% set idx = loop %}
-    {{show_author(author)}}{% if not loop.last %}{{ delimiter }}{% endif %}  
+    {{ show_author(author) | e }}{% if not loop.last %}{{ delimiter | e }}{% endif %}
   {% endfor %}
 {%- endmacro %}
 
@@ -60,18 +60,5 @@
       <div>{{ metadata["standard_book_number"].get("standard_book_number", "") }}<</div>
       {% endif %}
     </div>
-    
   </div>
-  {% if files and files['enabled']%}
-  <div class="extra content center aligned">
-    
-    {% for file in files["entries"] %} 
-    <a href="{{file['links']['content']}}" download="{{ file['key'] }}">
-      <i class="download icon"></i>
-      Download {{file['key']}} [{{ file['size'] | format_file_size  }}]
-    </a>
-    {% endfor %}
-    
-  </div>
-  {% endif %}
 </div>

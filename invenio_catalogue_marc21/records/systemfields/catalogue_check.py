@@ -30,7 +30,7 @@ from invenio_records.systemfields import SystemField
 class CatalogueCheckField(SystemField):
     """PID status field which checks against an expected status."""
 
-    def __init__(self, key="catalogue", dump=False):
+    def __init__(self, key="catalogue", value="", dump=False):
         """Initialize the CatalogueField.
 
         :param key: Attribute name of the CatalogueField to use for status check.

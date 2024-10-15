@@ -113,6 +113,30 @@ DefaultServiceLinks = {
         if_=RecordLink("{+api}/publications/{id}/files"),
         else_=RecordLink("{+api}/publications/{id}/draft/files"),
     ),
+    "latest": SwitchLinks(
+        cond=[
+            (
+                is_catalogue,
+                RecordLink("{+ui}/catalogue/{id}/versions/latest"),
+            ),
+            (
+                is_record,
+                RecordLink("{+ui}/publications/{id}/versions/latest"),
+            ),
+        ],
+    ),
+    "latest_html": SwitchLinks(
+        cond=[
+            (
+                is_catalogue,
+                RecordLink("{+ui}/catalogue/{id}/latest"),
+            ),
+            (
+                is_record,
+                RecordLink("{+ui}/publications/{id}/latest"),
+            ),
+        ],
+    ),
     "draft": SwitchLinks(
         cond=[
             (

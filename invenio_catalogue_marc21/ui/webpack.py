@@ -20,13 +20,14 @@ theme = WebpackThemeBundle(
         "semantic-ui": dict(
             entry={
                 "invenio-catalogue-marc21-theme": "./less/invenio_catalogue_marc21/theme.less",
-                # "invenio-catalogue-marc21-deposit": "./js/invenio_catalogue_marc21/deposit/index.js",
+                "invenio-catalogue-marc21-deposit": "./js/invenio_catalogue_marc21/deposit/index.js",
                 # "invenio-catalogue-marc21-landing-page": "./js/invenio_catalogue_marc21/landing_page/index.js",
             },
             dependencies={
                 "@babel/runtime": "^7.9.0",
                 "marcjs": "^2.0.0",
                 "i18next": "^20.3.0",
+                "react-d3-tree": "^3.5.0",
                 "i18next-browser-languagedetector": "^6.1.0",
                 "react-i18next": "^11.11.0",
             },

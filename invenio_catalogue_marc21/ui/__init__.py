@@ -18,7 +18,7 @@ from .errors import (
     record_tombstone_error,
 )
 from .filters import format_file_size
-from .views import record_detail
+from .views import deposit_create, deposit_edit, record_detail
 
 
 #
@@ -41,6 +41,16 @@ def create_blueprint(app):
     blueprint.add_url_rule(
         routes["record-detail"],
         view_func=record_detail,
+    )
+
+    blueprint.add_url_rule(
+        routes["deposit-create"],
+        view_func=deposit_create,
+    )
+
+    blueprint.add_url_rule(
+        routes["deposit-edit"],
+        view_func=deposit_edit,
     )
 
     # Register error handlers
