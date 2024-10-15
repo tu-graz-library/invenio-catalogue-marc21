@@ -5,13 +5,3 @@
     modify it under the terms of the MIT License; see LICENSE file for more
     details.
 #}
-
-{% macro display_titles(titles) %}
-  {% for title in titles %}
-    {{ title }}
-  {% endfor %}
-{% endmacro %}
-
-<div class="ui huge header">
-  {{ metadata.get('title_statement', {}).get("title") }}
-</div>
