@@ -22,9 +22,6 @@ from invenio_access.permissions import (
     system_identity,
     system_user_id,
 )
-from invenio_rdm_records.records.systemfields.access.field.record import (
-    AccessStatusEnum,
-)
 from invenio_rdm_records.utils import get_or_create_user
 
 from .utils import create_fake_data, create_marc21_record
@@ -49,12 +46,16 @@ def fake_feature_date(days=365):
     return _date.strftime("%Y-%m-%d")
 
 
-def create_fake_record():
+def create_fake_catalogue_record(chapters):
     """Create records for demo purposes in backend."""
     data = create_fake_data()
     data_access = {"files": "public", "record": "public"}
     data["access"] = data_access
-    create_marc21_record(data, data_access)
+    data_chapters = []
+    for chapters in range(chapters):
+        data_chapters.append(create_fake_data(chapter=True))
+
+    create_marc21_record(data, data_chapters, data_access)
 
 
 @click.group()
@@ -75,13 +76,21 @@ def catalogue():
 @click.option(
     "--number",
     "-n",
-    default=10,
+    default=1,
+    show_default=True,
+    type=int,
+    help="Number of records will be created.",
+)
+@click.option(
+    "--chapters",
+    "-c",
+    default=15,
     show_default=True,
     type=int,
     help="Number of records will be created.",
 )
 @with_appcontext
-def demo(user_email, number):
+def demo(user_email, number, chapters):
     """Create number of fake records for demo purposes."""
     click.secho("Creating demo records...", fg="blue")
 
@@ -92,6 +101,6 @@ def demo(user_email, number):
         identity = get_user_identity(user.id)
 
     for _ in range(number):
-        create_fake_record()
+        create_fake_catalogue_record(chapters)
 
     click.secho("Created records!", fg="green")
