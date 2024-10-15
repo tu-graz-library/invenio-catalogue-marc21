@@ -8,12 +8,6 @@
 
 """Invenio module link multiple marc21 modules."""
 
-# TODO: This is an example file. Remove it if you do not need it, including
-# the templates and static folders as well as the test case.
-
-from flask import Blueprint, render_template
-from invenio_i18n import gettext as _
-from flask_login import current_user, login_required
 
 def init(app):
     """Init app."""

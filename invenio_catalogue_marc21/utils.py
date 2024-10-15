@@ -143,7 +143,7 @@ def create_fake_data(chapter=False, files=True):
                         "ind1": "_",
                         "ind2": "_",
                         "subfields": {
-                            "a": [fake.text(max_nb_chars=2000)],
+                            "a": [fake.text(max_nb_chars=500)],
                             "b": [fake.text(max_nb_chars=100)],
                         },
                     }
@@ -291,11 +291,11 @@ def create_marc21_record(data, data_chapters: list, access):
     chapter_draft = []
     for chapter in data_chapters:
         draft_chapter = service.create(
-                data=chapter,
-                identity=system_identity(),
-                access=access,
-            )
-        
+            data=chapter,
+            identity=system_identity(),
+            access=access,
+        )
+
         file_path = create_fake_file()
         add_file_to_record(draft_chapter.id, file_path)
         chapter_draft.append(draft_chapter)
