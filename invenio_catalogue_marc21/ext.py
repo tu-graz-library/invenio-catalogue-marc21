@@ -47,4 +47,13 @@ class InvenioCatalogueMarc21(object):
 
     def init_resources(self, app):
         """Initialize resources."""
-        pass
+
+
+def finalize_app(app: Flask) -> None:
+    """Finalize app."""
+    init(app)
+
+
+def api_finalize_app(app: Flask) -> None:
+    """Finalize app for api."""
+    init(app)
