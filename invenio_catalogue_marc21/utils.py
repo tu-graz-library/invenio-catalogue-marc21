@@ -25,12 +25,14 @@ from faker_file.providers.pdf_file.generators import reportlab_generator
 from faker_file.storages.filesystem import FileSystemStorage
 from flask_principal import Identity
 from invenio_access.permissions import any_user, authenticated_user, system_process
-from invenio_records_marc21.proxies import current_records_marc21
+
+from .proxies import current_catalogue_marc21_service
 
 
-def fake_resource_type():
+def resource_type_generator(chapter=False):
     """Create fake record resource type."""
-
+    if chapter:
+        return "CHAPTER"
     return "CATALOGUE"
 
 
@@ -43,7 +45,7 @@ def system_identity():
     return identity
 
 
-def create_fake_data():
+def create_fake_data(chapter=False, files=True):
     """Create records for demo purposes."""
     fake = Faker()
 
@@ -56,10 +58,11 @@ def create_fake_data():
     person_title = fake.suffix_nonbinary()
     create_date = fake.date_time_this_decade()
     country_code = fake.country_code()
+    fake_resource_type = resource_type_generator(chapter)
 
     data_to_use = {
         "files": {
-            "enabled": True,
+            "enabled": files,
         },
         "pids": {},
         "metadata": {
@@ -202,7 +205,7 @@ def create_fake_data():
                     {
                         "ind1": "2",
                         "ind2": "_",
-                        "subfields": {"d": [f"{fake_resource_type()}"]},
+                        "subfields": {"d": [f"{fake_resource_type}"]},
                     }
                 ],
                 "995": [
@@ -259,7 +262,7 @@ def create_fake_file():
 
 def add_file_to_record(recid, file_path):
     """Add file to record."""
-    file_service = current_records_marc21.records_service._draft_files
+    file_service = current_catalogue_marc21_service._draft_files
     filename = "Report.pdf"
     data = [{"key": filename}]
 
@@ -272,18 +275,53 @@ def add_file_to_record(recid, file_path):
         file_service.commit_file(id_=recid, file_key=filename, identity=identity)
 
 
-def create_marc21_record(data, access):
+def create_marc21_record(data, data_chapters: list, access):
     """Create records for demo purposes."""
-    service = current_records_marc21.records_service
-    draft = service.create(
+    service = current_catalogue_marc21_service
+    draft_root = service.create(
         data=data,
         identity=system_identity(),
         access=access,
     )
     # add fake file to record
     file_path = create_fake_file()
-    add_file_to_record(draft.id, file_path)
+    add_file_to_record(draft_root.id, file_path)
 
-    record = service.publish(id_=draft.id, identity=system_identity())
+    # create chapters as draft to have the pid
+    chapter_draft = []
+    for chapter in data_chapters:
+        draft_chapter = service.create(
+                data=chapter,
+                identity=system_identity(),
+                access=access,
+            )
+        
+        file_path = create_fake_file()
+        add_file_to_record(draft_chapter.id, file_path)
+        chapter_draft.append(draft_chapter)
 
-    return record
+    # extract root parent and the child list
+    root = draft_root.id
+    parent = root
+    children = [chapter.id for chapter in chapter_draft]
+    catalogue = {"root": root, "parent": parent, "children": children}
+
+    # update draft
+    drafts = []
+    for draft in [draft_root] + chapter_draft:
+        data = draft.data
+        data["catalogue"] = catalogue
+        drafts.append(
+            service.update_draft(
+                id_=draft.id,
+                data=data,
+                identity=system_identity(),
+            )
+        )
+
+    # publish drafts
+    records = []
+    for draft in drafts:
+        records.append(service.publish(id_=draft.id, identity=system_identity()))
+
+    return records
