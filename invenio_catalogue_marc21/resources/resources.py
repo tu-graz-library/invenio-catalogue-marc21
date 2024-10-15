@@ -15,9 +15,12 @@ from invenio_drafts_resources.resources import RecordResource
 from invenio_records_marc21.services.record.metadata import Marc21Metadata
 from invenio_records_resources.resources.records.resource import (
     request_data,
+    request_extra_args,
     request_headers,
+    request_search_args,
     request_view_args,
 )
+from invenio_records_resources.resources.records.utils import search_preference
 
 from . import config
 
@@ -44,7 +47,7 @@ class Marc21CatalogueRecordResource(RecordResource):
             return f"{self.config.url_prefix}{route}"
 
         rules = [
-            route("GET", p(routes["list"]), self.search),
+            # route("GET", p(routes["list"]), self.search),
             route("POST", p(routes["list"]), self.create),
             route("GET", p(routes["item"]), self.read),
             route("PUT", p(routes["item"]), self.update),
@@ -53,14 +56,17 @@ class Marc21CatalogueRecordResource(RecordResource):
             route("PUT", p(routes["item-draft"]), self.update_draft),
             route("DELETE", p(routes["item-draft"]), self.delete_draft),
             route("POST", p(routes["item-publish"]), self.publish),
+            # Additional routes
+            # route("GET", p(routes["item-tree"]), self.tree),
         ]
         return rules
 
-    def convert_metadata(self, data):
+    def convert_record(self, data):
         """Convert metadata to a dict."""
         metadata = Marc21Metadata()
-        metadata.xml = data
-        return metadata.json.get("metadata", {})
+        metadata.xml = data["metadata"]
+        data["metadata"] = metadata.json.get("metadata", {})
+        return data
 
     @request_data
     @response_handler()
@@ -71,7 +77,7 @@ class Marc21CatalogueRecordResource(RecordResource):
         """
 
         data = resource_requestctx.data
-        data["metadata"] = self.convert_metadata(data)
+        data = self.convert_record(data)
         item = self.service.create(
             g.identity,
             data=data,
@@ -87,9 +93,8 @@ class Marc21CatalogueRecordResource(RecordResource):
 
         PUT /catalogue/:pid_value/draft
         """
-        metadata = Marc21Metadata()
         data = resource_requestctx.data
-        data["metadata"] = self.convert_metadata(data)
+        data = self.convert_record(data)
         item = self.service.update_draft(
             g.identity,
             resource_requestctx.view_args["pid_value"],
@@ -98,22 +103,18 @@ class Marc21CatalogueRecordResource(RecordResource):
         )
         return item.to_dict(), 200
 
-
-# class Marc21ParentRecordLinksResource(RecordResource):
-#     """Secret links resource."""
-
-#     def create_url_rules(self):
-#         """Create the URL rules for the record resource."""
-
-#         def p(route):
-#             """Prefix a route with the URL prefix."""
-#             return f"{self.config.url_prefix}{route}"
-
-#         routes = self.config.routes
-#         return [
-#             route("GET", p(routes["list"]), self.search),
-#             route("POST", p(routes["list"]), self.create),
-#             route("GET", p(routes["item"]), self.read),
-#             route("PUT", p(routes["item"]), self.update),
-#             route("DELETE", p(routes["item"]), self.delete),
-#         ]
+    #
+    @request_extra_args
+    @request_search_args
+    @response_handler(many=True)
+    def tree(self):
+        """Perform a search over the items."""
+        identity = g.identity
+        pid_value = resource_requestctx.view_args["pid_value"]
+        hits = self.service.search(
+            identity=identity,
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+            expand=resource_requestctx.args.get("expand", False),
+        )
+        return hits.to_dict(), 200

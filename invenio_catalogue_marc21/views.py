@@ -33,3 +33,9 @@ def init(app):
     # iregistry.register(
     #     ext.records_service.draft_indexer, indexer_id="marc21-records-drafts"
     # )
+
+
+def create_record_bp(app):
+    """Create records blueprint."""
+    ext = app.extensions["invenio-catalogue-marc21"]
+    return ext.record_resource.as_blueprint()
