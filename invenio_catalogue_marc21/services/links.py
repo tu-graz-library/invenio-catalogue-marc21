@@ -41,10 +41,7 @@ class SwitchLinks:
 
 def is_catalogue(record, ctx):
     """Shortcut for links to determine if record is a catalogue record."""
-    if hasattr(record, "is_catalogue"):
-        catalogue = record.is_catalogue
-    else:
-        catalogue = record.get("is_catalogue", False)
+    catalogue = "marc21-catalogue" in record.get("$schema", "")
     if catalogue:
         return True
     return False
@@ -58,7 +55,7 @@ DefaultServiceLinks = {
                 ConditionalLink(
                     cond=is_record,
                     if_=RecordLink("{+api}/catalogue/{id}"),
-                    else_=RecordLink("{+api}/publications/{id}/draft"),
+                    else_=RecordLink("{+api}/catalogue/{id}/draft"),
                 ),
             ),
             (
@@ -78,7 +75,7 @@ DefaultServiceLinks = {
                 ConditionalLink(
                     cond=is_record,
                     if_=RecordLink("{+ui}/catalogue/{id}"),
-                    else_=RecordLink("{+ui}/publications/uploads/{id}"),
+                    else_=RecordLink("{+ui}/catalogue/uploads/{id}"),
                 ),
             ),
             (
@@ -116,9 +113,18 @@ DefaultServiceLinks = {
         if_=RecordLink("{+api}/publications/{id}/files"),
         else_=RecordLink("{+api}/publications/{id}/draft/files"),
     ),
-    "latest": RecordLink("{+api}/publications/{id}/versions/latest"),
-    "latest_html": RecordLink("{+ui}/publications/{id}/latest"),
-    "draft": RecordLink("{+api}/publications/{id}/draft", when=is_record),
+    "draft": SwitchLinks(
+        cond=[
+            (
+                is_catalogue,
+                RecordLink("{+ui}/catalogue/{id}/latest", when=is_record),
+            ),
+            (
+                is_record,
+                RecordLink("{+ui}/publications/{id}/latest", when=is_record),
+            ),
+        ],
+    ),
     "publish": SwitchLinks(
         cond=[
             (

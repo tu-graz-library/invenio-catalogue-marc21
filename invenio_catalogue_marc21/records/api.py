@@ -26,7 +26,7 @@ class Marc21CatalogueDraft(Marc21Draft):
 
     catalogue = DictField(key="catalogue", clear_none=False, create_if_missing=True)
 
-    is_catalogue = CatalogueCheckField(dump=True)
+    is_catalogue = CatalogueCheckField(dump=True, value="marc21-catalogue")
 
 
 class Marc21CatalogueRecord(Marc21Record):
@@ -38,4 +38,4 @@ class Marc21CatalogueRecord(Marc21Record):
 
     catalogue = DictField(key="catalogue", clear_none=False, create_if_missing=True)
 
-    is_catalogue = CatalogueCheckField(dump=True)
+    is_catalogue = CatalogueCheckField(dump=True, value="marc21-catalogue")
