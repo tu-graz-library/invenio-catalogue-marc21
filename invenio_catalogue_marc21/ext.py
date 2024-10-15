@@ -21,6 +21,8 @@ from . import config
 from .resources import (
     Marc21CatalogueRecordResource,
     Marc21CatalogueRecordResourceConfig,
+    Marc21CatalogueResource,
+    Marc21CatalogueResourceConfig,
 )
 from .services import Marc21CatalogueService, Marc21CatalogueServiceConfig
 from .views import init
@@ -78,6 +80,10 @@ class InvenioCatalogueMarc21(object):
         self.record_resource = Marc21CatalogueRecordResource(
             service=self.records_service,
             config=Marc21CatalogueRecordResourceConfig,
+        )
+        self.record_catalgoue = Marc21CatalogueResource(
+            service=self.records_service,
+            config=Marc21CatalogueResourceConfig,
         )
         pass
 

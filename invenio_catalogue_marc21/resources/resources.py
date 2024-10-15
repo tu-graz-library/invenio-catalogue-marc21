@@ -19,10 +19,61 @@ from invenio_records_resources.resources.records.resource import (
     request_headers,
     request_search_args,
     request_view_args,
+    request_read_args,
 )
 from invenio_records_resources.resources.records.utils import search_preference
 
 from . import config
+
+
+class Marc21CatalogueResource(RecordResource):
+    """Marc21 Catalogue resource."""
+
+    config_name = "MARC21_CATALOGUE_CONFIG"
+    default_config = config.Marc21CatalogueResourceConfig
+
+    def create_url_rules(self):
+        """Create the URL rules for the record resource."""
+        routes = self.config.routes
+
+        def p(route):
+            """Prefix a route with the URL prefix."""
+            return f"{self.config.url_prefix}{route}"
+
+        rules = [
+            #route("GET", p(routes["list"]), self.search),
+            route("GET", p(routes["item"]), self.catalogue),
+        ]
+        return rules
+
+    #
+    @request_extra_args
+    @request_search_args
+    @response_handler(many=True)
+    def search(self):
+        """Perform a search over the items."""
+        identity = g.identity
+        pid_value = resource_requestctx.view_args["pid_value"]
+        hits = self.service.catalogue(
+            identity=identity,
+            params=resource_requestctx.args,
+            search_preference=search_preference(),
+            expand=resource_requestctx.args.get("expand", False),
+        )
+        return hits, 200
+    
+    @request_extra_args
+    @request_read_args
+    @request_view_args
+    @response_handler()
+    def catalogue(self):
+        """Read an item."""
+        item = self.service.catalogue(
+            g.identity,
+            resource_requestctx.view_args["pid_value"],
+            expand=resource_requestctx.args.get("expand", False),
+        )
+        return item, 200
 
 
 #
@@ -56,8 +107,6 @@ class Marc21CatalogueRecordResource(RecordResource):
             route("PUT", p(routes["item-draft"]), self.update_draft),
             route("DELETE", p(routes["item-draft"]), self.delete_draft),
             route("POST", p(routes["item-publish"]), self.publish),
-            # Additional routes
-            # route("GET", p(routes["item-tree"]), self.tree),
         ]
         return rules
 
@@ -102,19 +151,3 @@ class Marc21CatalogueRecordResource(RecordResource):
             revision_id=resource_requestctx.headers.get("if_match"),
         )
         return item.to_dict(), 200
-
-    #
-    @request_extra_args
-    @request_search_args
-    @response_handler(many=True)
-    def tree(self):
-        """Perform a search over the items."""
-        identity = g.identity
-        pid_value = resource_requestctx.view_args["pid_value"]
-        hits = self.service.search(
-            identity=identity,
-            params=resource_requestctx.args,
-            search_preference=search_preference(),
-            expand=resource_requestctx.args.get("expand", False),
-        )
-        return hits.to_dict(), 200

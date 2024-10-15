@@ -33,3 +33,9 @@ def create_record_bp(app):
     """Create records blueprint."""
     ext = app.extensions["invenio-catalogue-marc21"]
     return ext.record_resource.as_blueprint()
+
+
+def create_catalogue_bp(app):
+    """Create records blueprint."""
+    ext = app.extensions["invenio-catalogue-marc21"]
+    return ext.record_catalgoue.as_blueprint()
