@@ -10,7 +10,6 @@
 
 
 from flask_resources.serializers import JSONSerializer, MarshmallowSerializer
-
 from .schema import Marc21CatalogueSchema
 
 
