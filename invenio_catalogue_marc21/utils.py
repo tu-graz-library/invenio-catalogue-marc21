@@ -201,6 +201,34 @@ def create_fake_data(chapter=False, files=True):
                         },
                     }
                 ],
+                "700": [
+                    {
+                        "ind1": "1",
+                        "ind2": "_",
+                        "subfields": {
+                            "4": [country_code],
+                            "a": [f"{fake.first_name()}, {fake.last_name()}"],
+                        },
+                    }
+                ],
+                "710": [
+                    {
+                        "ind1": "1",
+                        "ind2": "_",
+                        "subfields": {
+                            "a": [f"TU Graz {fake.company()}"],
+                        },
+                    }
+                ],
+                "751": [
+                    {
+                        "ind1": "_",
+                        "ind2": "_",
+                        "subfields": {
+                            "a": [f"{fake.city_name()}"],
+                        },
+                    }
+                ],
                 "970": [
                     {
                         "ind1": "2",

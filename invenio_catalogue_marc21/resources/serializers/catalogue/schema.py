@@ -11,15 +11,15 @@
 from functools import partial
 
 from invenio_i18n import get_locale
-from marshmallow import Schema
+from marshmallow import Schema, fields
 from marshmallow.fields import List
-from marshmallow import fields
-from marshmallow_utils.fields import SanitizedUnicode
 from marshmallow_utils.fields import FormatDate as BaseFormatDatetime
+from marshmallow_utils.fields import SanitizedUnicode
 
 from ..fields import MetadataUIField
 
 FormatDatetime = partial(BaseFormatDatetime, locale=get_locale)
+
 
 class Marc21CatalogueMetadataSchema(Schema):
     """Schema for dumping extra information for the UI."""
@@ -28,7 +28,7 @@ class Marc21CatalogueMetadataSchema(Schema):
 
     additional = (
         # "access",
-        #"status",
+        # "status",
         # "parent",
         # "links",
         # "files",

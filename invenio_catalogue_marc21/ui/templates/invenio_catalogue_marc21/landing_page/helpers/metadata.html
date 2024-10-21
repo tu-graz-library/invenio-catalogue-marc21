@@ -37,27 +37,27 @@
       </div>
       {% endif %}
       
-      {% if metadata["main_entry_personal_name"] %}
+      {% if "other_identifiers" in metadata %}
       <div class="label">{{_('Persistent Identifier')}}:</div>
       <div><a href="https://doi.org/10.3217/978-3-85125-582-9">https://doi.org/10.3217/978-3-85125-582-9</a></div>
       {% endif %}
 
+      {% if "description" in metadata %}
       <div class="label">{{_('Description')}}:</div>
       <div>1 Online-Ressource (72 Seiten)</div>
+      {% endif %}
       
+      {% if "licence" in metadata %}
       <div class="label">{{_('Licence')}}:</div>
       <div>CC BY-NC-ND</div>
-      {% if "standard_book_number" in ui %}
-      <div class="label">{{_('ISBN')}}:</div>
-      <div>{{ metadata["standard_book_number"] }}<</div>
       {% endif %}
-      {% if "publication_year" in ui %}
+      {% if "standard_book_number" in metadata and "standard_book_number" in metadata["standard_book_number"] %}
+      <div class="label">{{_('ISBN')}}:</div>
+      <div>{{ metadata["standard_book_number"]["standard_book_number"] }}</div>
+      {% endif %}
+      {% if "publication_year" in metadata %}
       <div class="label">{{_('Publication year')}}:</div>
-      <div>{{ metadata["publication_year"] }}<</div>
-      {% endif %}
-      {% if "standard_book_number" in ui %}
-      <div class="label">{{_('ISBN')}}:</div>
-      <div>{{ metadata["standard_book_number"].get("standard_book_number", "") }}<</div>
+      <div>{{ metadata["publication_year"] }}</div>
       {% endif %}
     </div>
   </div>
