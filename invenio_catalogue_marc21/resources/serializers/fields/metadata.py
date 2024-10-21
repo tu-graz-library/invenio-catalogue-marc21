@@ -64,44 +64,50 @@ class MetadataUIField(Field):
 
             # general_note = field_subfields(fields.get("500", []))
             # dissertation_note = field_subfields(fields.get("502", []))
-            out = {
-                "standard_book_number": (
-                    {
-                        "standard_book_number": field_subfield(
-                            "a", standard_book_number[0]
-                        ),
-                    }
-                    if standard_book_number
-                    else {}
-                ),
-                # "other_standard_identifiers": {
-                #     "identifier": field_subfield("a", other_identifiers),
-                #     "code": field_subfield("2", other_identifiers),
-                # } if other_identifiers and len(other_identifiers) > 0 else {},
-                "main_entry_personal_name": {
+            out = {}
+            if other_identifiers:
+                out["other_standard_identifiers"] = {
+                    "identifier": field_subfield("a", other_identifiers[0]),
+                    "code": field_subfield("2", other_identifiers[0]),
+                }
+            if standard_book_number:
+                out["standard_book_number"] = {
+                    "standard_book_number": field_subfield(
+                        "a", standard_book_number[0]
+                    ),
+                }
+            if main_entry_personal_name:
+                out["main_entry_personal_name"] = {
                     "personal_name": field_subfield("a", main_entry_personal_name[0])
-                },
-                "added_entry_personal_name": [
+                }
+            if added_entry_personal_name:
+                out["added_entry_personal_name"] = [
                     {"personal_name": field_subfield("a", creator)}
                     for creator in added_entry_personal_name
-                ],
-                "title_statement": (
-                    {
-                        "title": field_subfield("a", title_statement[0]),
-                        "additional_title": field_subfield("b", title_statement[0]),
-                    }
-                    if title_statement is not None
-                    else {}
-                ),
-                "physical_description": {
+                ]
+            if title_statement:
+                out["title_statement"] = {
+                    "title": field_subfield("a", title_statement[0]),
+                    "additional_title": field_subfield("b", title_statement[0]),
+                }
+            if physical_description:
+                out["physical_description"] = {
                     "extent": field_subfield("a", physical_description[0])
-                },
-                # "corporate_name": {
-                #     "corporate_name_or_jurisdiction_name_as_entry": field_subfield("a", corporate_name)
-                # } if corporate_name is not None else {},
-                # "geographic_name": {
-                #     "geographic_name": field_subfield("a", publication_location)
-                # } if publication_year is not None else {},
+                }
+            if corporate_name:
+                out["corporate_name"] = {
+                    "corporate_name_or_jurisdiction_name_as_entry": field_subfield(
+                        "a", corporate_name[0]
+                    )
+                }
+            if publication_location:
+                out["geographic_name"] = {
+                    "geographic_name": field_subfield("a", publication_location[0])
+                }
+            if publication_year:
+                out["publication_year"] = publication_year
+
+            trdzout = {
                 "publication_year": publication_year,
                 # "dissertation_note": {
                 #     "dissertation_note": field_subfield("a", dissertation_note)

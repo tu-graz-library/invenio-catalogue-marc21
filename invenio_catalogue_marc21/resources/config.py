@@ -16,11 +16,11 @@ from invenio_drafts_resources.resources import RecordResourceConfig
 from invenio_records_resources.resources.records.args import SearchRequestArgsSchema
 
 from .serializers import Marc21CatalogueXMLSerializer
+from .serializers.catalogue import Marc21CatalogueSerializer
 from .serializers.ui import (
     Marc21CatalogueUIJSONSerializer,
     Marc21CatalogueUIXMLSerializer,
 )
-from .serializers.catalogue import Marc21CatalogueSerializer
 
 url_prefix = "/catalogue"
 
@@ -44,8 +44,7 @@ class Marc21CatalogueResourceConfig(RecordResourceConfig):
     links_config = {}
 
     routes = {
-        "list": "/chapters",
-        "item": "/chapters/<pid_value>",
+        "item": "/<pid_value>/catalogue",
     }
 
     # Request parsing
@@ -91,7 +90,6 @@ class Marc21CatalogueRecordResourceConfig(RecordResourceConfig):
         "search": "/search",
         "list": "",
         "item": "/<pid_value>",
-        "item-tree": "/<pid_value>/tree",
         "item-draft": "/<pid_value>/draft",
         "item-publish": "/<pid_value>/draft/actions/publish",
     }
