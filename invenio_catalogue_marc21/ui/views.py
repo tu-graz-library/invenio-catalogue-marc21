@@ -27,13 +27,20 @@ from invenio_catalogue_marc21.resources.serializers.ui import (
     Marc21CatalogueUIXMLSerializer,
 )
 
+from invenio_catalogue_marc21.resources.serializers.catalogue import (
+    Marc21CatalogueSerializer,
+)
+
+
+from .decoractors import pass_catalogue
 from .deposit import deposit_config
 
 
 @login_required
 @pass_record_or_draft
+@pass_catalogue
 @pass_record_files
-def record_detail(record=None, files=None, pid_value=None, is_preview=False):
+def record_detail(record=None, files=None, pid_value=None, is_preview=False, catalogue={}):
     """Record detail page (aka landing page)."""
     files_dict = None if files is None else files.to_dict()
 
@@ -50,6 +57,7 @@ def record_detail(record=None, files=None, pid_value=None, is_preview=False):
         permissions=record.has_permissions_to(
             ["edit", "new_version", "manage", "update_draft", "read_files"]
         ),
+        catalogue=Marc21CatalogueSerializer().dump_obj(catalogue),
         is_preview=is_preview,
         is_draft=record._record.is_draft,
     )
