@@ -91,6 +91,7 @@ class Marc21CatalogueRecordResourceConfig(RecordResourceConfig):
         "search": "/search",
         "list": "",
         "item": "/<pid_value>",
+        "item-tree": "/<pid_value>/tree",
         "item-draft": "/<pid_value>/draft",
         "item-publish": "/<pid_value>/draft/actions/publish",
     }
