@@ -9,10 +9,13 @@
 # details.
 
 """Marc21 decorators backend."""
+
 from functools import wraps
 
 from flask import g
+
 from ..proxies import current_catalogue_marc21_service
+
 
 def pass_catalogue(f):
     """Decorate to retrieve the record or draft using the record service."""
@@ -23,7 +26,10 @@ def pass_catalogue(f):
 
         def get_catalogue():
             """Retrieve record."""
-            return current_catalogue_marc21_service.catalogue(id_=pid_value, identity=g.identity)
+            return current_catalogue_marc21_service.catalogue(
+                id_=pid_value, identity=g.identity
+            )
+
         catalogue = get_catalogue()
         kwargs["catalogue"] = catalogue
         return f(**kwargs)

@@ -225,7 +225,7 @@ def create_fake_data(chapter=False, files=True):
                         "ind1": "_",
                         "ind2": "_",
                         "subfields": {
-                            "a": [f"Graz"],
+                            "a": [f"{fake.city_name()}"],
                         },
                     }
                 ],

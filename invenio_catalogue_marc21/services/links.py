@@ -165,5 +165,13 @@ DefaultServiceLinks = {
             ),
         ],
     ),
+    "catalogue": SwitchLinks(
+        cond=[
+            (
+                is_catalogue,
+                RecordLink("{+api}/catalogue/{id}/catalogue"),
+            ),
+        ],
+    ),
     "versions": RecordLink("{+api}/publications/{id}/versions"),
 }

@@ -42,11 +42,15 @@
       <div><a href="https://doi.org/10.3217/978-3-85125-582-9">https://doi.org/10.3217/978-3-85125-582-9</a></div>
       {% endif %}
 
+      {% if "description" in metadata %}
       <div class="label">{{_('Description')}}:</div>
       <div>1 Online-Ressource (72 Seiten)</div>
+      {% endif %}
       
+      {% if "licence" in metadata %}
       <div class="label">{{_('Licence')}}:</div>
       <div>CC BY-NC-ND</div>
+      {% endif %}
       {% if "standard_book_number" in metadata and "standard_book_number" in metadata["standard_book_number"] %}
       <div class="label">{{_('ISBN')}}:</div>
       <div>{{ metadata["standard_book_number"]["standard_book_number"] }}</div>

@@ -22,15 +22,13 @@ from invenio_records_marc21.ui.theme.decorators import pass_draft, pass_draft_fi
 from invenio_records_marc21.ui.theme.deposit import empty_record
 from invenio_stats.proxies import current_stats
 
+from invenio_catalogue_marc21.resources.serializers.catalogue import (
+    Marc21CatalogueSerializer,
+)
 from invenio_catalogue_marc21.resources.serializers.ui import (
     Marc21CatalogueUIJSONSerializer,
     Marc21CatalogueUIXMLSerializer,
 )
-
-from invenio_catalogue_marc21.resources.serializers.catalogue import (
-    Marc21CatalogueSerializer,
-)
-
 
 from .decoractors import pass_catalogue
 from .deposit import deposit_config
@@ -40,7 +38,9 @@ from .deposit import deposit_config
 @pass_record_or_draft
 @pass_catalogue
 @pass_record_files
-def record_detail(record=None, files=None, pid_value=None, is_preview=False, catalogue={}):
+def record_detail(
+    record=None, files=None, pid_value=None, is_preview=False, catalogue={}
+):
     """Record detail page (aka landing page)."""
     files_dict = None if files is None else files.to_dict()
 

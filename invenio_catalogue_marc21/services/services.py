@@ -59,10 +59,14 @@ class Marc21CatalogueMixin:
 
         record = self.record_cls.pid.resolve(id_)
         catalogue = record.get("catalogue", {})
-        catalogue["root"] = self.read(identity, catalogue["root"], expand=False).to_dict()
-        catalogue["parent"] = self.read(identity, catalogue["parent"], expand=False).to_dict()
+        catalogue["root"] = self.read(
+            identity, catalogue["root"], expand=False
+        ).to_dict()
+        catalogue["parent"] = self.read(
+            identity, catalogue["parent"], expand=False
+        ).to_dict()
         child_record = []
-        for child in catalogue["children"]: 
+        for child in catalogue["children"]:
             child_record.append(self.read(identity, child, expand=False).to_dict())
         catalogue["children"] = child_record
         return catalogue
