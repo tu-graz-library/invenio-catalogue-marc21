@@ -7,11 +7,13 @@
 #}
 
 {% macro display_titles(titles) %}
-  {% for title in titles %}
-    {{ title }}
-  {% endfor %}
+  {% if "full_title" in titles %}
+    {{ titles.full_title }}
+  {% elif "title" in titles %}
+    {{ titles.title }}
+  {% endif %}
 {% endmacro %}
 
 <div class="ui huge header">
-  {{ metadata.get('title_statement', {}).get("title") }}
+  {{ display_titles(metadata.get('title_statement', {})) }}
 </div>

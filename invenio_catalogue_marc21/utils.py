@@ -19,10 +19,11 @@ from faker_file.contrib.pdf_file.reportlab_snippets import (
     add_paragraph,
     add_picture,
     add_table,
+    add_h1_heading,
+    add_h2_heading,
 )
 from faker_file.providers.pdf_file import PdfFileProvider
 from faker_file.providers.pdf_file.generators import reportlab_generator
-from faker_file.storages.filesystem import FileSystemStorage
 from flask_principal import Identity
 from invenio_access.permissions import any_user, authenticated_user, system_process
 
@@ -73,6 +74,13 @@ def create_fake_data(chapter=False, files=True):
                 "007": "cr#|||||||||||",
                 "008": f"230501s{create_date.strftime('%Y')}    |||     om    ||| | eng c",
                 "009": f"{ac_id}",
+                "020": [
+                    {
+                        "ind1": "_",
+                        "ind2": "_",
+                        "subfields": {"a": [f"{fake.isbn13()}"]},
+                    }
+                ],
                 "035": [
                     {
                         "ind1": "_",
@@ -98,6 +106,7 @@ def create_fake_data(chapter=False, files=True):
                     }
                 ],
                 "041": [{"ind1": "_", "ind2": "_", "subfields": {"a": ["eng"]}}],
+                "044": [{"ind1": "_", "ind2": "_", "subfields": {"a": [country_code]}}],
                 "100": [
                     {
                         "ind1": "1",
@@ -113,7 +122,8 @@ def create_fake_data(chapter=False, files=True):
                         "ind1": "1",
                         "ind2": "0",
                         "subfields": {
-                            "a": [f"{fake.company()}"],
+                            "a": [f"{fake.text(max_nb_chars=20)}"],
+                            "b": [f"{fake.company()}"],
                             "c": [f"{person_title} {first_name}, {last_name}"],
                         },
                     }
@@ -133,8 +143,9 @@ def create_fake_data(chapter=False, files=True):
                         "ind1": "_",
                         "ind2": "1",
                         "subfields": {
-                            "a": [f"{fake.city()}"],
-                            "c": [f"{create_date.strftime('%B %Y')}"],
+                            "a": ["Duckburg"],
+                            "b": [f"{fake.company()}"],
+                            "c": [f"{create_date.strftime('%Y')}"],
                         },
                     }
                 ],
@@ -143,8 +154,7 @@ def create_fake_data(chapter=False, files=True):
                         "ind1": "_",
                         "ind2": "_",
                         "subfields": {
-                            "a": [fake.text(max_nb_chars=500)],
-                            "b": [fake.text(max_nb_chars=100)],
+                            "a": ["1 Online-Ressource (VII, XXX Pages)"],
                         },
                     }
                 ],
@@ -168,28 +178,6 @@ def create_fake_data(chapter=False, files=True):
                         },
                     },
                 ],
-                "506": [
-                    {
-                        "ind1": "0",
-                        "ind2": "_",
-                        "subfields": {
-                            "2": ["star"],
-                            "f": ["Unrestricted online access"],
-                        },
-                    }
-                ],
-                "520": [
-                    {
-                        "ind1": "_",
-                        "ind2": "_",
-                        "subfields": {"a": [fake.text(max_nb_chars=100)]},
-                    },
-                    {
-                        "ind1": "_",
-                        "ind2": "_",
-                        "subfields": {"a": [fake.text(max_nb_chars=100)]},
-                    },
-                ],
                 "655": [
                     {
                         "ind1": "_",
@@ -198,6 +186,34 @@ def create_fake_data(chapter=False, files=True):
                             "0": [f"({country_code}-552){fake.ssn()}"],
                             "2": ["gnd-content"],
                             "a": ["Hochschulschrift"],
+                        },
+                    }
+                ],
+                "700": [
+                    {
+                        "ind1": "1",
+                        "ind2": "_",
+                        "subfields": {
+                            "4": [country_code],
+                            "a": [f"{fake.first_name()}, {fake.last_name()}"],
+                        },
+                    }
+                ],
+                "710": [
+                    {
+                        "ind1": "2",
+                        "ind2": "_",
+                        "subfields": {
+                            "a": [f"TU Graz {fake.company()}"],
+                        },
+                    }
+                ],
+                "751": [
+                    {
+                        "ind1": "_",
+                        "ind2": "_",
+                        "subfields": {
+                            "a": [f"{fake.city()}"],
                         },
                     }
                 ],
@@ -225,7 +241,7 @@ def create_fake_data(chapter=False, files=True):
                         "ind1": "_",
                         "ind2": "_",
                         "subfields": {
-                            "a": [f"{fake.city_name()}"],
+                            "a": [f"{fake.city()}"],
                         },
                     }
                 ],
@@ -254,9 +270,6 @@ def create_fake_data(chapter=False, files=True):
     return data_to_use
 
 
-from faker.generator import Generator
-
-
 def create_fake_file():
     """Create a fake PDF file."""
     FAKER = Faker()
@@ -266,14 +279,20 @@ def create_fake_file():
         pdf_generator_cls=reportlab_generator.ReportlabPdfGenerator,
         content=DynamicTemplate(
             [
+                (add_h1_heading, {}),  # Add h1 heading
+                (add_paragraph, {}),  # Add paragraph
                 (add_paragraph, {}),  # Add paragraph
                 (add_page_break, {}),  # Add page break
+                (add_h2_heading, {}),  # Add h2 heading
+                (add_paragraph, {}),  # Add paragraph
                 (add_picture, {}),  # Add picture
                 (add_page_break, {}),  # Add page break
+                (add_h1_heading, {}),  # Add h1 heading
                 (add_table, {}),  # Add table
+                (add_paragraph, {}),  # Add paragraph
                 (add_page_break, {}),  # Add page break
             ]
-            * 5
+            * 3
         ),
         raw=True,
     )
@@ -336,7 +355,20 @@ def create_marc21_record(data, data_chapters: list, access):
 
     # update draft
     drafts = []
-    for draft in [draft_root] + chapter_draft:
+    
+    # update root draft
+    data = draft_root.data
+    data["catalogue"] = catalogue
+    drafts.append(
+        service.update_draft(
+                    id_=draft_root.id,
+                    data=data,
+                    identity=system_identity(),
+                )
+        )
+    
+    catalogue = {"root": root, "parent": parent}
+    for draft in chapter_draft:
         data = draft.data
         data["catalogue"] = catalogue
         drafts.append(

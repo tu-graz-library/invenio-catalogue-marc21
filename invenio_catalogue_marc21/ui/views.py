@@ -27,9 +27,10 @@ from invenio_catalogue_marc21.resources.serializers.catalogue import (
 )
 from invenio_catalogue_marc21.resources.serializers.ui import (
     Marc21CatalogueUIJSONSerializer,
-    Marc21CatalogueUIXMLSerializer,
 )
-
+from invenio_catalogue_marc21.resources.serializers.deposit import (
+    Marc21CatalogueDepositSerializer,
+)
 from .decoractors import pass_catalogue
 from .deposit import deposit_config
 
@@ -80,7 +81,7 @@ def deposit_create():
 @pass_draft_files
 def deposit_edit(draft=None, draft_files=None, pid_value=None):
     """Edit an existing deposit."""
-    serializer = Marc21CatalogueUIXMLSerializer()
+    serializer = Marc21CatalogueDepositSerializer()
     record = serializer.dump_obj(draft.to_dict())
 
     return render_template(

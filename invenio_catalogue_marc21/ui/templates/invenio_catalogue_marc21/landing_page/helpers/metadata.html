@@ -21,10 +21,7 @@
 <div class="ui raised card fluid">
   <div class="content">
     <div class="description">
-      {% set description = metadata.get("physical_description", {}).get("extent") %}
-      {% if description %}
-      <p>{{ description }}</p>    
-      {% endif %}        
+      
     </div>      
     <div class="ui grid metadata-grid">
       {% if "main_entry_personal_name" in metadata %}
@@ -55,6 +52,10 @@
       <div class="label">{{_('ISBN')}}:</div>
       <div>{{ metadata["standard_book_number"]["standard_book_number"] }}</div>
       {% endif %}
+      {% if "physical_description" in description %}
+      <div class="label">{{_('Description')}}:</div>
+      <div>{{ metadata["physical_description"].get("extent", "") }}</div>    
+      {% endif %}        
       {% if "publication_year" in metadata %}
       <div class="label">{{_('Publication year')}}:</div>
       <div>{{ metadata["publication_year"] }}</div>

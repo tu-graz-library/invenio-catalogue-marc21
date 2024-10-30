@@ -13,14 +13,14 @@ from invenio_records_marc21.resources.serializers.ui import (
     Marc21UIJSONSerializer,
 )
 
-from .schema import Marc21CatalogueUISchema, Marc21CatalogueUIXMLSchema
+from .schema import Marc21CatalogueDepositSchema
 
 
-class Marc21CatalogueUIJSONSerializer(Marc21UIJSONSerializer):
+class Marc21CatalogueDepositSerializer(Marc21UIJSONSerializer):
     """UI JSON serializer implementation."""
 
     def __init__(
-        self, object_schema_cls=Marc21CatalogueUISchema, object_key="ui", **options
+        self, object_schema_cls=Marc21CatalogueDepositSchema, object_key="ui", **options
     ):
         """Marc21 UI JSON Constructor.
 
