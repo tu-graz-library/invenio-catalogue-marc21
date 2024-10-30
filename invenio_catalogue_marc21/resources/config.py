@@ -19,9 +19,10 @@ from .serializers import Marc21CatalogueXMLSerializer
 from .serializers.catalogue import Marc21CatalogueSerializer
 from .serializers.ui import (
     Marc21CatalogueUIJSONSerializer,
-    Marc21CatalogueUIXMLSerializer,
 )
-
+from .serializers.deposit import (
+    Marc21CatalogueDepositSerializer,
+)
 url_prefix = "/catalogue"
 
 
@@ -72,11 +73,11 @@ class Marc21CatalogueRecordResourceConfig(RecordResourceConfig):
     response_handlers = {
         "application/json": ResponseHandler(JSONSerializer()),
         "application/marcxml": ResponseHandler(Marc21CatalogueXMLSerializer()),
-        "application/vnd.inveniomarc21.v1+json": ResponseHandler(
+        "application/vnd.inveniomarc21.ui.v1+json": ResponseHandler(
             Marc21CatalogueUIJSONSerializer()
         ),
-        "application/vnd.inveniomarc21.v1+marcxml": ResponseHandler(
-            Marc21CatalogueUIXMLSerializer()
+        "application/vnd.inveniomarc21.v1+json": ResponseHandler(
+            Marc21CatalogueDepositSerializer()
         ),
     }
 
