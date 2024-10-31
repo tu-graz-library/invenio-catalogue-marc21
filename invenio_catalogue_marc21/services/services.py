@@ -65,6 +65,10 @@ class Marc21CatalogueMixin:
         catalogue["parent"] = self.read(
             identity, catalogue["parent"], expand=False
         ).to_dict()
+
+        if "children" not in catalogue:
+            return catalogue
+        
         child_record = []
         for child in catalogue["children"]:
             child_record.append(self.read(identity, child, expand=False).to_dict())
