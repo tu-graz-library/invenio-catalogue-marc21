@@ -6,6 +6,13 @@
     details.
 #}
 
+{% macro show_doi(doi_value, record, badge_id="record-doi-badge") %}
+  <span class="ui t small get-badge">
+    <img id='{{badge_id}}' data-target="[data-modal='{{ doi_value }}']"
+         src="{{ url_for('invenio_formatter_badges.badge', title='DOI', value=doi_value, ext='svg') }}" alt="{{ doi_value }}" />
+  </span>
+{%- endmacro %}
+
 <div class="left floated left aligned eight wide column">
     <div class="twelve wide column">
         <span class="ui" title="{{_('Created')}}">
@@ -24,13 +31,9 @@
     <span class="ui label small neutral" title="{{ _('Resource type') }}">
         {{ metadata.resource_type}}
     </span>
-{% endif %}
-    <span class="ui label small access-status {{ record.ui.access_status.id }}"
-        title="{{ _('Access status') }}" data-tooltip="{{ record.ui.access_status.description_l10n }}"
-        data-inverted="">
-        {% if record.ui.access_status.icon %}
-        <i class="icon {{ record.ui.access_status.icon }}"></i>
-        {% endif %}
-        {{ record.ui.access_status.title_l10n }}
-    </span>
+    {% endif %}
+    {%- set doi = record.pids.get('doi', {}).get('identifier') %}
+    {% if doi %}
+    {{ show_doi(doi, record) }}
+    {% endif %}
 </div>
