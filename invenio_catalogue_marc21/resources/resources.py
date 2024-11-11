@@ -93,12 +93,6 @@ class Marc21CatalogueRecordResource(RecordResource):
         ]
         return rules
 
-    def convert_record(self, data):
-        """Convert metadata to a dict."""
-        metadata = Marc21Metadata()
-        metadata.xml = data["metadata"]
-        data["metadata"] = metadata.json.get("metadata", {})
-        return data
 
     @request_data
     @response_handler()
@@ -109,7 +103,6 @@ class Marc21CatalogueRecordResource(RecordResource):
         """
 
         data = resource_requestctx.data
-        data = self.convert_record(data)
         item = self.service.create(
             g.identity,
             data=data,
@@ -126,7 +119,6 @@ class Marc21CatalogueRecordResource(RecordResource):
         PUT /catalogue/:pid_value/draft
         """
         data = resource_requestctx.data
-        data = self.convert_record(data)
         item = self.service.update_draft(
             g.identity,
             resource_requestctx.view_args["pid_value"],
