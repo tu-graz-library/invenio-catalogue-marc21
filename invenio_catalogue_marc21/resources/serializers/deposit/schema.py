@@ -9,9 +9,13 @@
 """Schema for marc21 catalogue ui records."""
 
 from functools import partial
-from invenio_records_marc21.resources.serializers.deposit.schema import MetadataDepositField
+
+from invenio_records_marc21.resources.serializers.deposit.schema import (
+    MetadataDepositField,
+)
 
 from ..schema import Marc21CatalogueSchema
+
 
 class Marc21CatalogueDepositSchema(Marc21CatalogueSchema):
     """Marc21 catalogue deposit schema."""

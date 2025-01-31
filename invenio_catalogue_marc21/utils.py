@@ -15,12 +15,12 @@ from random import randint
 from faker import Faker
 from faker_file.base import DynamicTemplate
 from faker_file.contrib.pdf_file.reportlab_snippets import (
+    add_h1_heading,
+    add_h2_heading,
     add_page_break,
     add_paragraph,
     add_picture,
     add_table,
-    add_h1_heading,
-    add_h2_heading,
 )
 from faker_file.providers.pdf_file import PdfFileProvider
 from faker_file.providers.pdf_file.generators import reportlab_generator
@@ -241,7 +241,7 @@ def create_fake_data(chapter=False, files=True):
                         "ind1": "_",
                         "ind2": "_",
                         "subfields": {
-                            "a": [f"{fake.city()}"],
+                            "a": [f"{fake.city_name()}"],
                         },
                     }
                 ],
@@ -355,18 +355,18 @@ def create_marc21_record(data, data_chapters: list, access):
 
     # update draft
     drafts = []
-    
+
     # update root draft
     data = draft_root.data
     data["catalogue"] = catalogue
     drafts.append(
         service.update_draft(
-                    id_=draft_root.id,
-                    data=data,
-                    identity=system_identity(),
-                )
+            id_=draft_root.id,
+            data=data,
+            identity=system_identity(),
         )
-    
+    )
+
     catalogue = {"root": root, "parent": parent}
     for draft in chapter_draft:
         data = draft.data
