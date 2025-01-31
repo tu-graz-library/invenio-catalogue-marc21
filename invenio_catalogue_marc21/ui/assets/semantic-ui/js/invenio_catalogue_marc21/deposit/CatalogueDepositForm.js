@@ -10,12 +10,13 @@ import _get from "lodash/get";
 import { i18next } from "@translations/invenio_records_marc21/i18next";
 import React, { Component, createRef } from "react";
 import {
-  Marc21RecordSerializer,
+
   MetadataFields,
   TemplateField,
 } from "@js/invenio_records_marc21/components";
+import { Marc21CatalogueSerializer } from "./components";
 import { AccordionField } from "react-invenio-forms";
-import { Card, Container, Grid, Ref, Sticky } from "semantic-ui-react";
+import { Card, Grid, Ref, Sticky } from "semantic-ui-react";
 import {
   AccessRightField,
   FileUploader,
@@ -43,7 +44,7 @@ export class CatalogueDepositForm extends Component {
     this.config = props.config || {};
     this.templates = props.templates || [];
     this.files = props.files;
-    this.recordSerializer = new Marc21RecordSerializer();
+    this.recordSerializer = new Marc21CatalogueSerializer();
 
     this.noFiles = false;
     if (
@@ -85,6 +86,7 @@ export class CatalogueDepositForm extends Component {
                     label={i18next.t("Catalogue")}
                     labelIcon="space shuttle"
                     fieldPath="catalgoue"
+                    onError={() => {}}
                   />
               </Grid.Column>
               {/* Main content */}
@@ -94,7 +96,7 @@ export class CatalogueDepositForm extends Component {
                   active
                   label={i18next.t("Metadata")}
                 >
-                  <MetadataFields className={"metadata"} fieldPath="metadata" />
+                  {/* <MetadataFields className={"metadata"} fieldPath="metadata" /> */}
                 </AccordionField>
               </Grid.Column>
 
