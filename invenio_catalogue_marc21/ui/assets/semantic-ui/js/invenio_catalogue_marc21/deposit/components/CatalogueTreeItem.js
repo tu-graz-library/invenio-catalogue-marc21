@@ -1,21 +1,14 @@
+
+import { Segment } from 'semantic-ui-react';
 import React from 'react';
 
 export const CatalogueTreeItem = ({ nodeData = {}, triggerNodeToggle, foreignObjectProps = {} }) => {
   return (
     <React.Fragment>
-      <circle r={20}></circle>
       <foreignObject {...foreignObjectProps}>
-        <div
-          style={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            border: '1px solid black',
-            paddingBottom: '1rem',
-            backgroundColor: 'rgb(248, 248, 255)', // ghostwhite
-          }}
+        <Segment
+          raised
+          padded
         >
           <h3>{nodeData.name}</h3>
           <ul style={{ listStyleType: 'none', padding: 0 }}>
@@ -26,19 +19,30 @@ export const CatalogueTreeItem = ({ nodeData = {}, triggerNodeToggle, foreignObj
                 </li>
               ))}
           </ul>
-          <select>
-            <option value="1">Option: 1</option>
-            <option value="2">Option: 2</option>
-            <option value="3">Option: 3</option>
-          </select>
-          {nodeData.children && (
-            <button style={{ textAlign: 'center' }} onClick={triggerNodeToggle}>
-              {nodeData.__rd3dag.collapsed ? '⬅️ ➡️ Expand' : '➡️ ⬅️ Collapse'}
-            </button>
+          {nodeData.children && nodeData.children.length > 0 && (
+            <>
+              {nodeData.children.map((childNode, index) => (
+                <CatalogueTreeItem
+                  key={index}
+                  nodeData={childNode}
+                  triggerNodeToggle={triggerNodeToggle}
+                  foreignObjectProps={foreignObjectProps}
+                />
+              ))}
+            </>            
           )}
-        </div>
+        </Segment>
       </foreignObject>
     </React.Fragment>
   );
 };
 
+const renderForeignObjectNode = ({ nodeDatum, toggleNode }) => (
+  <foreignObject width="200" height="100" x="-100" y="-50">
+    <CatalogueTreeItem
+      nodeData={nodeDatum}
+      triggerNodeToggle={toggleNode}
+      foreignObjectProps={{ width: 200, height: 100 }}
+    />
+  </foreignObject>
+);

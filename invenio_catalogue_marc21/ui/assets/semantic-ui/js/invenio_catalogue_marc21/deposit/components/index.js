@@ -8,3 +8,4 @@
 
 export { CatalogueTreeField } from "./CatalogueTreeField";
 export { CatalogueTreeItem } from "./CatalogueTreeItem";
+export { Marc21CatalogueSerializer } from "./Marc21CatalogueSerializer";
