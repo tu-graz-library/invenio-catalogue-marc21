@@ -17,12 +17,9 @@ from invenio_records_resources.resources.records.args import SearchRequestArgsSc
 
 from .serializers import Marc21CatalogueXMLSerializer
 from .serializers.catalogue import Marc21CatalogueSerializer
-from .serializers.ui import (
-    Marc21CatalogueUIJSONSerializer,
-)
-from .serializers.deposit import (
-    Marc21CatalogueDepositSerializer,
-)
+from .serializers.deposit import Marc21CatalogueDepositSerializer
+from .serializers.ui import Marc21CatalogueUIJSONSerializer
+
 url_prefix = "/catalogue"
 
 
@@ -91,7 +88,6 @@ class Marc21CatalogueRecordResourceConfig(RecordResourceConfig):
         "search": "/search",
         "list": "",
         "item": "/<pid_value>",
-        "item-tree": "/<pid_value>/tree",
         "item-draft": "/<pid_value>/draft",
         "item-publish": "/<pid_value>/draft/actions/publish",
     }

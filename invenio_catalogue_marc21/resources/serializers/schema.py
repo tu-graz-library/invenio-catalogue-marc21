@@ -35,9 +35,8 @@ class Marc21CatalogueSchema(Marc21Schema):
             "links",
             "files",
         )
-        
-    id = SanitizedUnicode(data_key="id", attribute="id", dmup_only=True)
 
+    id = SanitizedUnicode(data_key="id", attribute="id", dmup_only=True)
 
     catalogue = fields.Nested(CatalogueSchema, attribute="catalogue")
     is_catalogue = fields.Boolean(attribute="is_catalogue")

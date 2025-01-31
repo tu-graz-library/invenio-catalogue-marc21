@@ -25,12 +25,13 @@ from invenio_stats.proxies import current_stats
 from invenio_catalogue_marc21.resources.serializers.catalogue import (
     Marc21CatalogueSerializer,
 )
-from invenio_catalogue_marc21.resources.serializers.ui import (
-    Marc21CatalogueUIJSONSerializer,
-)
 from invenio_catalogue_marc21.resources.serializers.deposit import (
     Marc21CatalogueDepositSerializer,
 )
+from invenio_catalogue_marc21.resources.serializers.ui import (
+    Marc21CatalogueUIJSONSerializer,
+)
+
 from .decoractors import pass_catalogue
 from .deposit import deposit_config
 

@@ -9,9 +9,7 @@
 """Marc21 UI record response serializers."""
 
 
-from invenio_records_marc21.resources.serializers.ui import (
-    Marc21UIJSONSerializer,
-)
+from invenio_records_marc21.resources.serializers.ui import Marc21UIJSONSerializer
 
 from .schema import Marc21CatalogueUISchema, Marc21CatalogueUIXMLSchema
 

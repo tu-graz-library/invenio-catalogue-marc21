@@ -20,7 +20,6 @@ from invenio_records_resources.resources.records.resource import (
     request_read_args,
     request_search_args,
     request_view_args,
-    request_read_args,
 )
 from invenio_records_resources.resources.records.utils import search_preference
 
@@ -42,27 +41,10 @@ class Marc21CatalogueResource(RecordResource):
             return f"{self.config.url_prefix}{route}"
 
         rules = [
-            #route("GET", p(routes["list"]), self.search),
             route("GET", p(routes["item"]), self.catalogue),
         ]
         return rules
 
-    #
-    @request_extra_args
-    @request_search_args
-    @response_handler(many=True)
-    def search(self):
-        """Perform a search over the items."""
-        identity = g.identity
-        pid_value = resource_requestctx.view_args["pid_value"]
-        hits = self.service.catalogue(
-            identity=identity,
-            params=resource_requestctx.args,
-            search_preference=search_preference(),
-            expand=resource_requestctx.args.get("expand", False),
-        )
-        return hits, 200
-    
     @request_extra_args
     @request_read_args
     @request_view_args
@@ -110,7 +92,6 @@ class Marc21CatalogueRecordResource(RecordResource):
             route("POST", p(routes["item-publish"]), self.publish),
         ]
         return rules
-
 
     @request_data
     @response_handler()
