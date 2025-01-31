@@ -18,8 +18,7 @@ from invenio_records_marc21.ui.records.decorators import (
     pass_record_files,
     pass_record_or_draft,
 )
-from invenio_records_marc21.ui.theme.decorators import pass_draft, pass_draft_files
-from invenio_records_marc21.ui.theme.deposit import empty_record
+from invenio_records_marc21.ui.theme.deposit import empty_record as base_empty_record
 from invenio_stats.proxies import current_stats
 
 from invenio_catalogue_marc21.resources.serializers.catalogue import (
@@ -32,8 +31,15 @@ from invenio_catalogue_marc21.resources.serializers.ui import (
     Marc21CatalogueUIJSONSerializer,
 )
 
-from .decoractors import pass_catalogue
+from .decoractors import pass_catalogue, pass_draft, pass_draft_files
 from .deposit import deposit_config
+
+
+def empty_record():
+    """Create an empty record."""
+    record = base_empty_record()
+    record["catalogue"] = {"root": "", "parent": "", "children": []}
+    return record
 
 
 @login_required
@@ -86,7 +92,7 @@ def deposit_edit(draft=None, draft_files=None, pid_value=None):
     record = serializer.dump_obj(draft.to_dict())
 
     return render_template(
-        "invenio_records_marc21/deposit/index.html",
+        "invenio_catalogue_marc21/deposit/index.html",
         forms_config=deposit_config(apiUrl=f"/api/catalogue/{pid_value}/draft"),
         record=record,
         files=draft_files.to_dict(),
