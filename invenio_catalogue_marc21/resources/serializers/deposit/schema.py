@@ -13,9 +13,9 @@ from functools import partial
 from invenio_records_marc21.resources.serializers.deposit.schema import (
     MetadataDepositField,
 )
+from marshmallow import fields
 
-from ..schema import Marc21CatalogueSchema
-
+from ..schema import Marc21CatalogueSchema, CatalogueSchema
 
 class Marc21CatalogueDepositSchema(Marc21CatalogueSchema):
     """Marc21 catalogue deposit schema."""
@@ -35,3 +35,6 @@ class Marc21CatalogueDepositSchema(Marc21CatalogueSchema):
         )
 
     metadata = MetadataDepositField(attribute="metadata")
+    catalogue = fields.Nested(CatalogueSchema, attribute="catalogue")
+    is_catalogue = fields.Boolean(attribute="is_catalogue")
+

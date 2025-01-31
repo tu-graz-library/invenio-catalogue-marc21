@@ -16,7 +16,8 @@ from invenio_records_resources.services.uow import unit_of_work
 
 
 class Marc21CatalogueMixin:
-    def _catalogue(self, identity, id_, expand=False, action="read"):
+
+    def catalogue(self, identity, id, include_drafts=True):
         """Build a tree of linked records.
 
 
@@ -27,43 +28,20 @@ class Marc21CatalogueMixin:
         :param include_deleted: Include deleted records.
 
         """
-        record = self.record_cls.pid.resolve(id_)
-        self.require_permission(identity, action, record=record)
+        func = self.read
+        api = self.record_cls
 
-        # Run components
-        for component in self.components:
-            if hasattr(component, "tree"):
-                component.read(identity, record=record)
+        if include_drafts:
+            func = self.read_draft
+            api = self.draft_cls
 
-        return self.result_item(
-            self,
-            identity,
-            record,
-            links_tpl=self.links_item_tpl,
-            expandable_fields=self.expandable_fields,
-            nested_links_item=getattr(self.config, "nested_links_item", None),
-            expand=expand,
-        )
-
-    def catalogue(self, identity, id_, expand=False, include_deleted=False):
-        """Build a tree of linked records.
-
-
-
-        :param identity: Identity of user creating the record.
-        :param id_: Record PID value.
-        :param expand: Expand the tree.
-        :param include_deleted: Include deleted records.
-
-        """
-
-        record = self.record_cls.pid.resolve(id_)
+        record = api.pid.resolve(id)
         catalogue = record.get("catalogue", {})
-        catalogue["root"] = self.read(
-            identity, catalogue["root"], expand=False
+        catalogue["root"] = func(
+            identity, catalogue["root"]
         ).to_dict()
-        catalogue["parent"] = self.read(
-            identity, catalogue["parent"], expand=False
+        catalogue["parent"] = func(
+            identity, catalogue["parent"]
         ).to_dict()
 
         if "children" not in catalogue:
@@ -71,7 +49,7 @@ class Marc21CatalogueMixin:
 
         child_record = []
         for child in catalogue["children"]:
-            child_record.append(self.read(identity, child, expand=False).to_dict())
+            child_record.append(func(identity, child).to_dict())
         catalogue["children"] = child_record
         return catalogue
 

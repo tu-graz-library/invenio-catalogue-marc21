@@ -16,7 +16,7 @@ from invenio_records_marc21.services.components.pids import PIDsComponent
 
 from .catalogue import CatalogueComponent
 
-DefaultRecordsComponents = [
+DefaultCatalogueComponents = [
     MetadataComponent,
     AccessComponent,
     DraftFilesComponent,
@@ -27,5 +27,5 @@ DefaultRecordsComponents = [
 
 __all__ = (
     "CatalogueComponent",
-    "DefaultRecordsComponents",
+    "DefaultCatalogueComponents",
 )

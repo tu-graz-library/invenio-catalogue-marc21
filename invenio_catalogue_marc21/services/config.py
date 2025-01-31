@@ -12,7 +12,7 @@ from invenio_records_marc21.services import Marc21RecordServiceConfig
 from invenio_records_resources.services.base.config import FromConfig
 
 from ..records import Marc21CatalogueDraft, Marc21CatalogueRecord
-from .components import DefaultRecordsComponents
+from .components import DefaultCatalogueComponents
 from .links import DefaultServiceLinks
 from .schemas import Marc21CatalogueSchema
 
@@ -38,5 +38,5 @@ class Marc21CatalogueServiceConfig(Marc21RecordServiceConfig):
 
     components = FromConfig(
         "MARC21_CATALOGUE_SERVICE_COMPONENTS",
-        default=DefaultRecordsComponents,
+        default=DefaultCatalogueComponents,
     )
