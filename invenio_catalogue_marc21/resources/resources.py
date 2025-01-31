@@ -45,16 +45,17 @@ class Marc21CatalogueResource(RecordResource):
         ]
         return rules
 
-    @request_extra_args
-    @request_read_args
+    @request_search_args
     @request_view_args
+    @request_data
     @response_handler()
     def catalogue(self):
         """Read an item."""
+        
         item = self.service.catalogue(
             g.identity,
             resource_requestctx.view_args["pid_value"],
-            expand=resource_requestctx.args.get("expand", False),
+            include_drafts=resource_requestctx.args.get("drafts", True),
         )
         return item, 200
 

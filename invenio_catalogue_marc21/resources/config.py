@@ -19,7 +19,7 @@ from .serializers import Marc21CatalogueXMLSerializer
 from .serializers.catalogue import Marc21CatalogueSerializer
 from .serializers.deposit import Marc21CatalogueDepositSerializer
 from .serializers.ui import Marc21CatalogueUIJSONSerializer
-
+from .args import CatalogueSearchArgsSchema
 url_prefix = "/catalogue"
 
 
@@ -35,10 +35,7 @@ class Marc21CatalogueResourceConfig(RecordResourceConfig):
         "application/json": ResponseHandler(Marc21CatalogueSerializer()),
     }
 
-    request_view_args = {
-        "pid_value": ma.fields.Str(),
-        "pid_type": ma.fields.Str(),
-    }
+
     links_config = {}
 
     routes = {
@@ -46,16 +43,14 @@ class Marc21CatalogueResourceConfig(RecordResourceConfig):
     }
 
     # Request parsing
+    request_search_args = CatalogueSearchArgsSchema
     request_args = SearchRequestArgsSchema
-    request_view_args = {"pid_value": ma.fields.Str()}
+    request_view_args = {
+        "pid_value": ma.fields.Str(),
+    }
     request_headers = {"if_match": ma.fields.Int()}
     request_body_parsers = {
         "application/json": RequestBodyParser(JSONDeserializer()),
-    }
-
-    request_view_args = {
-        "pid_value": ma.fields.Str(),
-        "pid_type": ma.fields.Str(),
     }
 
 
@@ -77,11 +72,6 @@ class Marc21CatalogueRecordResourceConfig(RecordResourceConfig):
             Marc21CatalogueDepositSerializer()
         ),
     }
-
-    request_view_args = {
-        "pid_value": ma.fields.Str(),
-        "pid_type": ma.fields.Str(),
-    }
     links_config = {}
 
     routes = {
@@ -94,7 +84,6 @@ class Marc21CatalogueRecordResourceConfig(RecordResourceConfig):
 
     # Request parsing
     request_args = SearchRequestArgsSchema
-    request_view_args = {"pid_value": ma.fields.Str()}
     request_headers = {"if_match": ma.fields.Int()}
     request_body_parsers = {
         "application/json": RequestBodyParser(JSONDeserializer()),
