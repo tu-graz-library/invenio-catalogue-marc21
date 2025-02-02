@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -9,59 +9,53 @@
 
 """Command-line tools for demo module."""
 
-import random
-from datetime import timedelta
+from collections.abc import Callable
+from functools import wraps
 
-import arrow
 import click
 from flask.cli import with_appcontext
-from flask_principal import Identity, RoleNeed, UserNeed
-from invenio_access.permissions import (
-    any_user,
-    authenticated_user,
-    system_identity,
-    system_user_id,
-)
-from invenio_rdm_records.utils import get_or_create_user
+from invenio_accounts.proxies import current_datastore
+from invenio_db import db
 
-from .utils import create_fake_data, create_marc21_record
+from .fixtures.demo import create_fake_catalogue_record
+from .fixtures.tasks import create_catalogue_marc21_record
 
 
-def get_user_identity(user_id):
-    """Get user identity."""
-    identity = Identity(user_id)
-    # TODO: we need to get the user roles for specific user groups and add to the identity
-    identity.provides.add(any_user)
-    identity.provides.add(UserNeed(user_id))
-    identity.provides.add(authenticated_user)
-    identity.provides.add(RoleNeed("Marc21Manager"))
-    return identity
+def get_user(user_email: str):
+    """Get user."""
+    with db.session.no_autoflush:
+        user = current_datastore.get_user_by_email(user_email)
+
+    if not user:
+        msg = f"NO user found for email: {user_email}"
+        raise RuntimeError(msg)
+
+    return user
 
 
-def fake_feature_date(days=365):
-    """Generates a fake feature_date."""
-    start_date = arrow.utcnow().datetime
-    random_number_of_days = random.randrange(1, days)
-    _date = start_date + timedelta(days=random_number_of_days)
-    return _date.strftime("%Y-%m-%d")
+def wrap_messages(before: str, after: str) -> Callable:
+    """Wrap messages with entry and exit message."""
 
+    def decorator[T](func: Callable[..., T]) -> Callable:
+        @wraps(func)
+        def wrapper(**kwargs: dict) -> None:
+            """Wrapper."""
+            click.secho(before, fg="blue")
+            try:
+                func(**kwargs)
+            except RuntimeError as error:
+                click.secho(str(error), fg="red")
+            else:
+                click.secho(after, fg="green")
 
-def create_fake_catalogue_record(chapters):
-    """Create records for demo purposes in backend."""
-    data = create_fake_data()
-    data_access = {"files": "public", "record": "public"}
-    data["access"] = data_access
-    data_chapters = []
-    for chapters in range(chapters):
-        data_chapters.append(create_fake_data(chapter=True))
+        return wrapper
 
-    create_marc21_record(data, data_chapters, data_access)
+    return decorator
 
 
 @click.group()
-def catalogue():
+def catalogue() -> None:
     """InvenioMarc21 records commands."""
-    pass
 
 
 @catalogue.command("demo")
@@ -76,6 +70,7 @@ def catalogue():
 @click.option(
     "--number",
     "-n",
+    "n_records",
     default=1,
     show_default=True,
     type=int,
@@ -84,23 +79,21 @@ def catalogue():
 @click.option(
     "--chapters",
     "-c",
+    "n_chapters",
     default=15,
     show_default=True,
     type=int,
-    help="Number of records will be created.",
+    help="Number of chapters will be created.",
 )
 @with_appcontext
-def demo(user_email, number, chapters):
+@wrap_messages(
+    before="Creating demo records...",
+    after="Created records!",
+)
+def demo(user_email: str, n_records: int, n_chapters: int) -> None:
     """Create number of fake records for demo purposes."""
-    click.secho("Creating demo records...", fg="blue")
+    user = get_user(user_email)
 
-    user = get_or_create_user(user_email)
-    if user.id == system_user_id:
-        identity = system_identity
-    else:
-        identity = get_user_identity(user.id)
-
-    for _ in range(number):
-        create_fake_catalogue_record(chapters)
-
-    click.secho("Created records!", fg="green")
+    for _ in range(n_records):
+        data, data_chapters, data_access = create_fake_catalogue_record(n_chapters)
+        create_catalogue_marc21_record.delay(user.id, data, data_chapters, data_access)

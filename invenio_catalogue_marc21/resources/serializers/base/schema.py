@@ -2,47 +2,48 @@
 #
 # This file is part of Invenio.
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
 # details.
 """Schemas for marc21 records serializers."""
 
-from invenio_records_marc21.resources.serializers.schema import Marc21Schema
-from marshmallow import Schema, fields
-from marshmallow_utils.fields import SanitizedUnicode
+# from invenio_records_marc21.resources.serializers.schema import Marc21Schema
+from invenio_records_marc21.services.schemas import Marc21RecordSchema
+from marshmallow import Schema
+from marshmallow.fields import Boolean, List, Method, Nested, String
 
 
 class CatalogueSchema(Schema):
     """Schema for a catalogue records."""
 
-    root = fields.String(attribute="root")
-    parent = fields.String(attribute="parent")
-    children = fields.List(fields.String(), attribute="children")
+    root = String()
+    parent = String()
+    children = List(String())
 
 
-class Marc21CatalogueSchema(Marc21Schema):
+class Marc21CatalogueSchema(Marc21RecordSchema):
     """Schema for dumping extra information for the marc21 record."""
 
-    class Meta:
-        """Meta class to accept unknown fields."""
+    # class Meta:
+    #     """Meta class to accept unknown fields."""
 
-        additional = (
-            "access",
-            "status",
-            "parent",
-            "links",
-            "files",
-        )
+    #     additional = (
+    #         "access",
+    #         "status",
+    #         "parent",
+    #         "links",
+    #         "files",
+    #     )
 
-    id = SanitizedUnicode(data_key="id", attribute="id", dmup_only=True)
+    id = String()
 
-    catalogue = fields.Nested(CatalogueSchema, attribute="catalogue")
-    is_catalogue = fields.Boolean(attribute="is_catalogue")
-    metadata = fields.Method(deserialize="load_metadata")
+    catalogue = Nested(CatalogueSchema)
+    is_catalogue = Boolean()
+    metadata = Method(deserialize="load_metadata")
 
-    def load_metadata(self, value):
+    def load_metadata(self, value: dict) -> dict:
         """Load metadata."""
         fields = {}
 
@@ -62,7 +63,7 @@ class Marc21CatalogueSchema(Marc21Schema):
                         "ind1": field["ind1"],
                         "ind2": field["ind2"],
                         "subfields": subfields,
-                    }
+                    },
                 )
         return {
             "fields": fields,

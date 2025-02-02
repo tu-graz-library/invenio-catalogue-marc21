@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -9,19 +9,17 @@
 """Metadata field for marc21 records."""
 
 
-import itertools
-
 from marshmallow.fields import Field
 
 
-def field_controlfield(value: list, start=0, end=-1):
+def field_controlfield(value: str, start: int = 0, end: int = -1) -> str:
     """MARC21 get sub string of a controlfields from json."""
     if isinstance(value, str):
         return value[start:end]
     return value
 
 
-def field_subfields(value: list):
+def field_subfields(value: list) -> list[dict]:
     """MARC21 get list of subfields from json."""
     subfields = []
     if isinstance(value, list):
@@ -29,7 +27,7 @@ def field_subfields(value: list):
     return subfields
 
 
-def field_subfield(key: str, subfields: dict):
+def field_subfield(key: str, subfields: dict) -> str:
     """Find subfield in a list of subfields dicts."""
     subfield = subfields.get(key, [])
     if isinstance(subfield, list):
@@ -40,14 +38,16 @@ def field_subfield(key: str, subfields: dict):
 class MetadataUIField(Field):
     """Schema for the record metadata."""
 
-    def _serialize(self, value, attr, obj, **kwargs):
+    def _serialize(self, value, attr, obj, **kwargs: dict):
         """Serialise access status."""
         fields = value.get("fields", {})
         out = {}
 
         if value:
             publication_year = field_controlfield(
-                fields.get("008", "               "), 7, 11
+                fields.get("008", "               "),
+                7,
+                11,
             )  # substring 7-10
             standard_book_number = field_subfields(fields.get("020", []))
             other_identifiers = field_subfields(fields.get("024", []))

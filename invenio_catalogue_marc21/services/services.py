@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -8,81 +8,74 @@
 
 """Invenio module link multiple marc21 modules."""
 
-
-from invenio_db import db
-from invenio_rdm_records.services.errors import RecordDeletedException
-from invenio_records_marc21.services import Marc21Metadata, Marc21RecordService
+from flask_principal import Identity
+from invenio_pidstore.errors import PIDDoesNotExistError
+from invenio_records_marc21.services import Marc21RecordService
+from invenio_records_resources.services.records.results import RecordItem
 from invenio_records_resources.services.uow import unit_of_work
+from sqlalchemy.exc import NoResultFound
 
 
-class Marc21CatalogueMixin:
+class Marc21CatalogueService(Marc21RecordService):
+    """Marc21 record service class."""
 
-    def catalogue(self, identity, id, include_drafts=True):
+    def tree(
+        self,
+        identity: Identity,
+        id_: str,
+        *,
+        include_drafts: bool = True,
+        parent=None,
+        root=None,
+    ) -> dict:
         """Build a tree of linked records.
-
-
 
         :param identity: Identity of user creating the record.
         :param id_: Record PID value.
-        :param expand: Expand the tree.
         :param include_deleted: Include deleted records.
-
+        :param level: child or deep
         """
-        func = self.read
-        api = self.record_cls
+        try:
+            record = self.read(identity, id_)
+        except (NoResultFound, PIDDoesNotExistError):
+            record = self.read_draft(identity, id_)
 
-        if include_drafts:
-            func = self.read_draft
-            api = self.draft_cls
+        children = record._record.get("catalogue", {}).get("children", [])
 
-        record = api.pid.resolve(id)
-        catalogue = record.get("catalogue", {})
-        catalogue["root"] = func(
-            identity, catalogue["root"]
-        ).to_dict()
-        catalogue["parent"] = func(
-            identity, catalogue["parent"]
-        ).to_dict()
+        try:
+            parent = parent or self.read(
+                identity, record._record["catalogue"]["parent"]
+            )
+            root = root or self.read(identity, record._record["catalogue"]["root"])
+        except (NoResultFound, PIDDoesNotExistError):
+            try:
+                parent = parent or self.read_draft(
+                    identity, record._record["catalogue"]["parent"]
+                )
+                root = root or self.read_draft(
+                    identity, record._record["catalogue"]["root"]
+                )
+            except PIDDoesNotExistError:
+                parent = {}
+                root = {}
 
-        if "children" not in catalogue:
-            return catalogue
-
-        child_record = []
-        for child in catalogue["children"]:
-            child_record.append(func(identity, child).to_dict())
-        catalogue["children"] = child_record
-        return catalogue
-
-
-class Marc21CatalogueService(Marc21RecordService, Marc21CatalogueMixin):
-    """Marc21 record service class."""
-
-    @unit_of_work()
-    def create(
-        self,
-        identity,
-        data=None,
-        metadata=Marc21Metadata(),
-        files=False,
-        access=None,
-        uow=None,
-    ):
-        """Create a draft record.
-
-        :param identity: Identity of user creating the record.
-        :type identity: `flask_principal.identity`
-        :param data: Input data according to the data schema.
-        :type data: dict
-        :param metadata: Input data according to the metadata schema.
-        :type metadata: `services.record.Marc21Metadata`
-        :param files: enable/disable file support for the record.
-        :type files: bool
-        :param dict access: provide access additional information
-        :return: marc21 record item
-        :rtype: `invenio_records_resources.services.records.results.RecordItem`
-        """
-        data = self._create_data(identity, data, metadata, files, access)
-        return super().create(identity=identity, data=data)
+        return {
+            "children": [
+                (
+                    self.tree(
+                        identity,
+                        child,
+                        include_drafts=include_drafts,
+                        parent=record,
+                        root=root,
+                    )
+                )
+                for child in children
+            ],
+            "node": record,
+            "parent": parent,
+            "root": root,
+        }
 
     @unit_of_work()
     def update_draft(
@@ -90,73 +83,45 @@ class Marc21CatalogueService(Marc21RecordService, Marc21CatalogueMixin):
         identity,
         id_,
         data=None,
-        metadata=Marc21Metadata(),
+        metadata=None,
         revision_id=None,
         access=None,
         uow=None,
     ):
-        """Update a draft record.
 
-        :param identity: Identity of user creating the record.
-        :type identity: `flask_principal.identity`
-        :param data: Input data according to the data schema.
-        :type data: dict
-        :param metadata: Input data according to the metadata schema.
-        :type metadata: `services.record.Marc21Metadata`
-        :param files: enable/disable file support for the record.
-        :type files: bool
-        :param dict access: provide access additional information
-        :return: marc21 record item
-        :rtype: `invenio_records_resources.services.records.results.RecordItem`
+        item = super().update_draft(identity, id_, data, metadata, revision_id, access)
+
+        # TODO:
+        # think of moving this to a component
+        # it may be clearer, but there is more configuration necessary which makes the invenio.cfg more complicated.
+        # it would be nice to add elements to the components list from the package in a more dynamic way,
+        # it would be nice to preserve some sorting so that the component keeps an index or a ordering in the sense,
+        # component needs applied before another. or other, one depends on another, like alembic scripts
+        # the question is how to implement it without killing the performance.
+        parent_id = data["catalogue"]["parent"]
+        if parent_id:
+            parent = self.edit(identity, parent_id)
+            parent_data = parent.data
+            if id_ not in parent_data["catalogue"]["children"]:
+                parent_data["catalogue"]["children"].append(id_)
+                super().update_draft(identity, parent_id, parent_data)
+
+        return item
+
+    def add(self, identity: Identity, data: dict) -> RecordItem:
+        """Add.
+
+        this method does only creates a new record. this means that there is not
+        yet added a entry to the children attribute in the parent node. this
+        enables the option to clean up unused nodes by a task.
+
+        the update draft method is then taking care of connecting the node to the parent.
+
+        QUESTION:
+        should the update_draft method be overritten or should that addition to
+        parent functionality be done by a component
+
+        QUESTION:
+        should the add be safeguarded by a permission system?
         """
-        data = self._create_data(identity, data, metadata, access=access)
-        return super().update_draft(
-            identity=identity, id_=id_, data=data, revision_id=revision_id
-        )
-
-    def read(self, identity, id_, expand=False, include_deleted=False):
-        """Update a draft record.
-
-        :param identity: Identity of user creating the record.
-        :type identity: `flask_principal.identity`
-        :param data: Input data according to the data schema.
-        :type data: dict
-        :param metadata: Input data according to the metadata schema.
-        :type metadata: `services.record.Marc21Metadata`
-        :param files: enable/disable file support for the record.
-        :type files: bool
-        :param dict access: provide access additional information
-        :return: marc21 record item
-        :rtype: `invenio_records_resources.services.records.results.RecordItem`
-        """
-        record = self.record_cls.pid.resolve(id_)
-        result = super().read(identity, id_, expand=expand)
-
-        if not include_deleted and record.deletion_status.is_deleted:
-            raise RecordDeletedException(record, result_item=result)
-        if include_deleted and record.deletion_status.is_deleted:
-            can_read_deleted = self.check_permission(
-                identity, "read_deleted", record=record
-            )
-
-            if not can_read_deleted:
-                # displays tombstone
-                raise RecordDeletedException(record, result_item=result)
-
-        return result
-
-    def read_draft(self, identity, id_, expand=False):
-        """Retrieve a draft of a record.
-
-        If the draft has a "deleted" published record then we return 410.
-        """
-        result = super().read_draft(identity, id_, expand=expand)
-        # check that if there is a published deleted record then return 410
-        draft = result._record
-        if draft.is_published:
-            record = self.record_cls.pid.resolve(id_)
-            if record.deletion_status.is_deleted:
-                result = super().read(identity, id_, expand=expand)
-                raise RecordDeletedException(record, result_item=result)
-
-        return result
+        return super().create(identity=identity, data=data)

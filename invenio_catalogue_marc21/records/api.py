@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -8,8 +8,6 @@
 
 
 """Marc21 Catalogue Api."""
-
-from __future__ import absolute_import, print_function
 
 from invenio_records.systemfields import ConstantField, DictField
 from invenio_records_marc21.records import Marc21Draft, Marc21Record

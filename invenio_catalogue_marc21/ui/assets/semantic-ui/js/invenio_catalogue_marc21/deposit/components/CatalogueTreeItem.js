@@ -1,48 +1,24 @@
+// This file is part of Invenio.
+//
+// Copyright (C) 2024-2025 Graz University of Technology.
+//
+// Invenio-Catalogue-Marc21 is free software; you can redistribute it and/or
+// modify it under the terms of the MIT License; see LICENSE file for more
+// details.
 
-import { Segment } from 'semantic-ui-react';
-import React from 'react';
+import React from "react";
+import { Segment } from "semantic-ui-react";
 
-export const CatalogueTreeItem = ({ nodeData = {}, triggerNodeToggle, foreignObjectProps = {} }) => {
+export const CatalogueTreeItem = ({ nodeData = {}, nodeToggle }) => {
   return (
-    <React.Fragment>
-      <foreignObject {...foreignObjectProps}>
-        <Segment
-          raised
-          padded
-        >
-          <h3>{nodeData.name}</h3>
-          <ul style={{ listStyleType: 'none', padding: 0 }}>
-            {nodeData.attributes &&
-              Object.keys(nodeData.attributes).map((labelKey, i) => (
-                <li key={`${labelKey}-${i}`}>
-                  {labelKey}: {nodeData.attributes[labelKey]}
-                </li>
-              ))}
-          </ul>
-          {nodeData.children && nodeData.children.length > 0 && (
-            <>
-              {nodeData.children.map((childNode, index) => (
-                <CatalogueTreeItem
-                  key={index}
-                  nodeData={childNode}
-                  triggerNodeToggle={triggerNodeToggle}
-                  foreignObjectProps={foreignObjectProps}
-                />
-              ))}
-            </>            
-          )}
-        </Segment>
-      </foreignObject>
-    </React.Fragment>
+    <g>
+      <text style={{ font: "italic 20px serif", fill: "black" }} onClick={nodeToggle}>
+        {nodeData.name}
+      </text>
+    </g>
   );
 };
 
-const renderForeignObjectNode = ({ nodeDatum, toggleNode }) => (
-  <foreignObject width="200" height="100" x="-100" y="-50">
-    <CatalogueTreeItem
-      nodeData={nodeDatum}
-      triggerNodeToggle={toggleNode}
-      foreignObjectProps={{ width: 200, height: 100 }}
-    />
-  </foreignObject>
+export const renderCustomNode = ({ nodeDatum, toggleNode }) => (
+  <CatalogueTreeItem nodeData={nodeDatum} triggerNodeToggle={toggleNode} />
 );
