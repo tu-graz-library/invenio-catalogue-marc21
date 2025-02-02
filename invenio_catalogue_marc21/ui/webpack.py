@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 #
-# Copyright (C) 2021-2024 Graz University of Technology.
+# Copyright (C) 2021-2025 Graz University of Technology.
 #
 # Invenio-catalogue-Marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -25,9 +25,9 @@ theme = WebpackThemeBundle(
             },
             dependencies={
                 "@babel/runtime": "^7.9.0",
-                "marcjs": "^2.0.0",
+                "d3-hierarchy": "^1.1.9",
+                "d3-shape": "^1.3.7",
                 "i18next": "^20.3.0",
-                "react-d3-tree": "^3.5.0",
                 "i18next-browser-languagedetector": "^6.1.0",
                 "react-i18next": "^11.11.0",
             },

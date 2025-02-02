@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -16,36 +16,36 @@ class CatalogueComponent(ServiceComponent):
 
     def create(self, identity, data=None, record=None, errors=None):
         """Create handler."""
-        record.catalogue = data.get("catalogue", {})
+        default_catalogue = {
+            "root": record["id"],
+            "parent": record["id"],
+            "children": [],
+        }
+        record.catalogue = data.get("catalogue", default_catalogue)
 
-    def read_draft(self, identity, draft=None):
-        """Update draft handler."""
-        pass
+    # def read_draft(self, identity, draft=None):
+    #     """Update draft handler."""
 
     def update_draft(self, identity, data=None, record=None, errors=None):
         """Update draft handler."""
         record.catalogue = data.get("catalogue", {})
 
-    def delete_draft(self, identity, draft=None, record=None, force=False):
-        """Delete draft handler."""
-        pass
+    # def delete_draft(self, identity, draft=None, record=None, force=False):
+    #     """Delete draft handler."""
 
     def edit(self, identity, draft=None, record=None):
         """Edit a record handler."""
         record.catalogue = draft.catalogue
 
-    def new_version(self, identity, draft=None, record=None):
-        """New version handler."""
-        pass
+    # def new_version(self, identity, draft=None, record=None):
+    #     """New version handler."""
 
-    def publish(self, identity, draft=None, record=None):
-        """Publish handler."""
-        record.catalogue = draft.catalogue
+    # def publish(self, identity, draft=None, record=None):
+    #     """Publish handler."""
+    #     record.catalogue = draft.catalogue
 
-    def import_files(self, identity, draft=None, record=None):
-        """Import files handler."""
-        pass
+    # def import_files(self, identity, draft=None, record=None):
+    #     """Import files handler."""
 
-    def post_publish(self, identity, record=None, is_published=False):
-        """Post publish handler."""
-        pass
+    # def post_publish(self, identity, record=None, is_published=False):
+    #     """Post publish handler."""

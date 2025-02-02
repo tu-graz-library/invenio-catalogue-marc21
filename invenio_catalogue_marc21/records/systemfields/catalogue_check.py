@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -23,14 +23,17 @@ from invenio_records.dictutils import dict_lookup, dict_set, parse_lookup_key
 from invenio_records.systemfields import SystemField
 
 
-# The `CatalogueCheckField` class is a system field in the context of Invenio-Records-Resources
-# that is used to check the presence of a catalogue attribute in a record. It is designed to be
-# used for checking if a specific attribute (in this case, a catalogue) exists in a record and
-# returns a boolean value based on its presence.
 class CatalogueCheckField(SystemField):
-    """PID status field which checks against an expected status."""
+    """PID status field which checks against an expected status.
 
-    def __init__(self, key="catalogue", value="", dump=False):
+    The `CatalogueCheckField` class is a system field in the context of
+    Invenio-Records-Resources that is used to check the presence of a catalogue
+    attribute in a record. It is designed to be used for checking if a specific
+    attribute (in this case, a catalogue) exists in a record and returns a
+    boolean value based on its presence.
+    """
+
+    def __init__(self, key: str = "catalogue", value: str = "", dump: bool = False):
         """Initialize the CatalogueField.
 
         :param key: Attribute name of the CatalogueField to use for status check.
@@ -50,12 +53,12 @@ class CatalogueCheckField(SystemField):
         catalogue = getattr(record, self.key)
         return bool(catalogue)
 
-    def pre_dump(self, record, data, **kwargs):
+    def pre_dump(self, record, data: dict, **kwargs: dict):
         """Called before a record is dumped in a secondary storage system."""
         if self._dump:
             dict_set(data, self.attr_name, getattr(record, self.attr_name))
 
-    def pre_load(self, data, **kwargs):
+    def pre_load(self, data: dict, **kwargs: dict):
         """Called before a record is dumped in a secondary storage system."""
         if self._dump:
             keys = parse_lookup_key(self.attr_name)

@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -11,7 +11,6 @@
 """Marc21 Record Service links."""
 
 from invenio_drafts_resources.services.records.config import is_draft, is_record
-from invenio_i18n import gettext as _
 from invenio_rdm_records.services.config import has_doi, is_record_and_has_doi
 from invenio_records_resources.services import ConditionalLink
 from invenio_records_resources.services.base.links import Link
@@ -21,8 +20,8 @@ from invenio_records_resources.services.records.links import RecordLink
 class SwitchLinks:
     """Switch link."""
 
-    def __init__(self, cond=None):
-        """Constructor."""
+    def __init__(self, cond: list[tuple] | None = None) -> None:
+        """Construct."""
         # conditions are a tuple of 1: is the condition and 2: the template
         self._conditions = cond
 
@@ -41,10 +40,7 @@ class SwitchLinks:
 
 def is_catalogue(record, ctx):
     """Shortcut for links to determine if record is a catalogue record."""
-    catalogue = "marc21-catalogue" in record.get("$schema", "")
-    if catalogue:
-        return True
-    return False
+    return "marc21-catalogue" in record.get("$schema", "")
 
 
 DefaultServiceLinks = {
@@ -91,21 +87,21 @@ DefaultServiceLinks = {
     "self_doi": Link(
         "{+ui}/publications/{+pid_doi}",
         when=is_record_and_has_doi,
-        vars=lambda record, vars: vars.update(
+        vars=lambda record, vars_: vars_.update(
             {
-                f"pid_{scheme}": pid["identifier"].split("/")[1]
+                f"pid_{scheme}": pid["identifier"].split("/")[-1]
                 for (scheme, pid) in record.pids.items()
-            }
+            },
         ),
     ),
     "doi": Link(
         "https://doi.org/{+pid_doi}",
         when=has_doi,
-        vars=lambda record, vars: vars.update(
+        vars=lambda record, vars_: vars_.update(
             {
                 f"pid_{scheme}": pid["identifier"]
                 for (scheme, pid) in record.pids.items()
-            }
+            },
         ),
     ),
     "files": ConditionalLink(
@@ -141,11 +137,11 @@ DefaultServiceLinks = {
         cond=[
             (
                 is_catalogue,
-                RecordLink("{+ui}/catalogue/{id}/latest", when=is_record),
+                RecordLink("{+ui}/catalogue/uploads/{id}", when=is_record),
             ),
             (
                 is_record,
-                RecordLink("{+ui}/publications/{id}/latest", when=is_record),
+                RecordLink("{+ui}/publications/uploads/{id}", when=is_record),
             ),
         ],
     ),
@@ -154,13 +150,15 @@ DefaultServiceLinks = {
             (
                 is_catalogue,
                 RecordLink(
-                    "{+api}/catalogue/{id}/draft/actions/publish", when=is_draft
+                    "{+api}/catalogue/{id}/draft/actions/publish",
+                    when=is_draft,
                 ),
             ),
             (
                 is_record,
                 RecordLink(
-                    "{+api}/publications/{id}/draft/actions/publish", when=is_draft
+                    "{+api}/publications/{id}/draft/actions/publish",
+                    when=is_draft,
                 ),
             ),
         ],

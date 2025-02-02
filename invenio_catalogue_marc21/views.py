@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -8,8 +8,10 @@
 
 """Invenio module link multiple marc21 modules."""
 
+from flask import Blueprint, Flask
 
-def init(app):
+
+def init(app: Flask) -> None:
     """Init app."""
     # Register services - cannot be done in extension because
     # Invenio-Records-Resources might not have been initialized.
@@ -29,13 +31,19 @@ def init(app):
     # )
 
 
-def create_record_bp(app):
+def create_record_bp(app: Flask) -> Blueprint:
     """Create records blueprint."""
     ext = app.extensions["invenio-catalogue-marc21"]
     return ext.record_resource.as_blueprint()
 
 
-def create_catalogue_bp(app):
+def create_catalogue_bp(app: Flask) -> Blueprint:
     """Create records blueprint."""
     ext = app.extensions["invenio-catalogue-marc21"]
     return ext.record_catalgoue.as_blueprint()
+
+
+def create_alma_proxy_bp(app: Flask) -> Blueprint:
+    """Create proxy blueprint."""
+    ext = app.extensions["invenio-catalogue-marc21"]
+    return ext.alma_proxy.as_blueprint()

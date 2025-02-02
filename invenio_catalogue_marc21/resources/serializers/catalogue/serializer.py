@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -19,10 +19,10 @@ class Marc21CatalogueSerializer(MarshmallowSerializer):
 
     def __init__(
         self,
-        format_serializer_cls=JSONSerializer,
-        object_schema_cls=Marc21CatalogueSchema,
-        **options
-    ):
+        format_serializer_cls: type = JSONSerializer,
+        object_schema_cls: type = Marc21CatalogueSchema,
+        **options: dict,
+    ) -> None:
         """Marc21 Base Serializer Constructor.
 
         :param schema_cls: Default Marc21Schema
@@ -31,14 +31,14 @@ class Marc21CatalogueSerializer(MarshmallowSerializer):
         super().__init__(
             format_serializer_cls=format_serializer_cls,
             object_schema_cls=object_schema_cls,
-            **options
+            **options,
         )
 
-    def dump_obj(self, obj):
+    def dump_obj(self, obj: dict) -> dict:
         """Dump the object into a JSON string."""
         return self.object_schema.dump(obj)
 
-    def dump_list(self, obj_list):
+    def dump_list(self, obj_list: dict) -> dict:
         """Serialize a list of records.
 
         :param obj_list: List of records instance.

@@ -1,45 +1,33 @@
 // This file is part of Invenio.
 //
-// Copyright (C) 2024 Graz University of Technology.
+// Copyright (C) 2024-2025 Graz University of Technology.
 //
 // Invenio-Catalogue-Marc21 is free software; you can redistribute it and/or
 // modify it under the terms of the MIT License; see LICENSE file for more
 // details.
 
-import _get from "lodash/get";
-import { i18next } from "@translations/invenio_records_marc21/i18next";
+import get from "lodash";
+import PropTypes from "prop-types";
 import React, { Component, createRef } from "react";
-import {
-
-  MetadataFields,
-  TemplateField,
-} from "@js/invenio_records_marc21/components";
-import { Marc21CatalogueSerializer } from "./components";
 import { AccordionField } from "react-invenio-forms";
 import { Card, Grid, Ref, Sticky } from "semantic-ui-react";
-import {
-  AccessRightField,
-  FileUploader,
-  SaveButton,
-  PublishButton,
-  PreviewButton,
-  DepositFormApp,
-  FormFeedback,
-  DeleteButton,
-  DepositStatusBox,
-} from "@js/invenio_rdm_records";
-import PropTypes from "prop-types";
-import { CatalogueTreeField } from "./components";
+
+import { DepositFormApp, FormFeedback } from "@js/invenio_rdm_records";
+import { MetadataFields } from "@js/invenio_records_marc21/components";
+import { i18next } from "@translations/invenio_catalogue_marc21/i18next";
+
+import { CatalogueTree, ManageRecord, Marc21CatalogueSerializer } from "./components";
+
 export class CatalogueDepositForm extends Component {
   accordionStyle = {
     header: { className: "segment inverted brand" },
   };
 
-  sidebarRef = createRef();
-
   constructor(props) {
     super(props);
+
     const { files, record } = this.props;
+
     this.props = props;
     this.config = props.config || {};
     this.templates = props.templates || [];
@@ -57,6 +45,8 @@ export class CatalogueDepositForm extends Component {
 
   render() {
     const { record, files, permissions, preselectedCommunity } = this.props;
+    const allowRecordRestriction = true;
+
     return (
       <DepositFormApp
         config={this.config}
@@ -75,103 +65,29 @@ export class CatalogueDepositForm extends Component {
           )}
           <Grid>
             <Grid.Row>
-              {/* Left Sidebar */}
-              <Grid.Column
-                  mobile={16}
-                  tablet={16}
-                  computer={5}
-                  className="left-sidebar"
-                >
-                  <CatalogueTreeField
-                    label={i18next.t("Catalogue")}
-                    labelIcon="space shuttle"
-                    fieldPath="catalgoue"
-                    onError={() => {}}
-                  />
-              </Grid.Column>
-              {/* Main content */}
-              <Grid.Column mobile={16} tablet={16} computer={8}>
-                <AccordionField
-                  includesPaths={["metadata.leader", "metadata.fields"]}
-                  active
-                  label={i18next.t("Metadata")}
-                >
-                  {/* <MetadataFields className={"metadata"} fieldPath="metadata" /> */}
-                </AccordionField>
+              <Grid.Column className="left-sidebar" computer={5}>
+                <CatalogueTree
+                  label={i18next.t("Catalogue")}
+                  labelIcon="space shuttle"
+                  fieldPath="catalgoue"
+                  catalogue={record.tree}
+                  onError={() => {}}
+                />
               </Grid.Column>
 
-              {/* Sidebar right */}
-              <Ref innerRef={this.sidebarRef}>
-                <Grid.Column
-                  mobile={16}
-                  tablet={16}
-                  computer={3}
-                  className="right-sidebar"
-                >
-                  <Sticky context={this.sidebarRef} offset={20}>
-                    <Card>
-                      <Card.Content>
-                        <DepositStatusBox />
-                      </Card.Content>
-                      <Card.Content>
-                        <Grid relaxed>
-                            <Grid.Column
-                              width={16}
-                              className="pb-0"
-                            >
-                              <SaveButton fluid />
-                            </Grid.Column>
-                            <Grid.Column
-                              width={16}
-                              className="pb-0"
-                            >
-                              <PreviewButton fluid type="submit" />
-                            </Grid.Column>
+              <Grid.Column className="main-column" computer={8}>
+                <MetadataFields className={"metadata"} fieldPath="metadata" />
+              </Grid.Column>
 
-                          <Grid.Column width={16} className="pt-10">
-                            <PublishButton fluid type="submit" />
-                          </Grid.Column>
-                        </Grid>
-                      </Card.Content>
-                    </Card>
-                  </Sticky>
-
-                  <Sticky context={this.sidebarRef} offset={10}>
-                    {this.templates.length > 0 && (
-                      <TemplateField
-                        label={i18next.t("Templates")}
-                        labelIcon={"bookmark"}
-                        templates={this.templates}
-                      />
-                    )}
-                  </Sticky>
-                  <AccessRightField
-                    label={i18next.t("Visibility")}
-                    labelIcon="shield"
-                    fieldPath="access"
-                  />
-                  {permissions?.can_delete_draft && (
-                    <Card>
-                      <Card.Content>
-                        <DeleteButton
-                          fluid
-                          // TODO: make is_published part of the API response
-                          //       so we don't have to do this
-                          isPublished={record.is_published}
-                        />
-                      </Card.Content>
-                    </Card>
-                  )}
- 
-                  <FileUploader
-                    isDraftRecord={!record.is_published}
-                    quota={this.config.quota}
-                    decimalSizeDisplay={this.config.decimal_size_display}
-                  />
-                </Grid.Column>
-
-                  
-              </Ref>
+              <Grid.Column className="right-sidebar" computer={3}>
+                <ManageRecord
+                  record={record}
+                  permissions={permissions}
+                  alloweRecordRestriction={allowRecordRestriction}
+                  templates={this.templates}
+                  config={this.config}
+                />
+              </Grid.Column>
             </Grid.Row>
           </Grid>
         </>
@@ -179,17 +95,3 @@ export class CatalogueDepositForm extends Component {
     );
   }
 }
-
-DepositFormApp.propTypes = {
-  config: PropTypes.object.isRequired,
-  record: PropTypes.object.isRequired,
-  preselectedCommunity: PropTypes.object,
-  files: PropTypes.object,
-  permissions: PropTypes.object,
-};
-
-DepositFormApp.defaultProps = {
-  preselectedCommunity: undefined,
-  permissions: null,
-  files: null,
-};

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -9,15 +9,21 @@
 """Invenio module link multiple marc21 modules."""
 
 
-from marshmallow import Schema, fields
+from invenio_records_marc21.services.schemas import Marc21RecordSchema
+from marshmallow import Schema
+from marshmallow.fields import List, Str
+from marshmallow_utils.fields import NestedAttribute
 
 
-#
-# Catalogue
-#
 class CatalogueSchema(Schema):
     """Catalogue schema."""
 
-    parent = fields.Str(required=True)
-    root = fields.Str(required=True)
-    children = fields.List(fields.Str())
+    parent = Str(required=True)
+    root = Str(required=True)
+    children = List(Str())
+
+
+class Marc21CatalogueSchema(Marc21RecordSchema):
+    """Marc21CatalogueSchema."""
+
+    catalogue = NestedAttribute(CatalogueSchema)

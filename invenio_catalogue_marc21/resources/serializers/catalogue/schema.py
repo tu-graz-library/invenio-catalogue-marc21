@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -11,8 +11,8 @@
 from functools import partial
 
 from invenio_i18n import get_locale
-from marshmallow import Schema, fields
-from marshmallow.fields import List
+from marshmallow import Schema
+from marshmallow.fields import Dict, List, Nested
 from marshmallow_utils.fields import FormatDate as BaseFormatDatetime
 from marshmallow_utils.fields import SanitizedUnicode
 
@@ -24,7 +24,7 @@ FormatDatetime = partial(BaseFormatDatetime, locale=get_locale)
 class Marc21CatalogueMetadataSchema(Schema):
     """Schema for dumping extra information for the UI."""
 
-    id = SanitizedUnicode(data_key="id", attribute="id")
+    id = SanitizedUnicode(data_key="id")
 
     additional = (
         # "access",
@@ -34,18 +34,18 @@ class Marc21CatalogueMetadataSchema(Schema):
         # "files",
         # "is_published",
     )
-    links = fields.Dict(attribute="links")
-    metadata = MetadataUIField(attribute="metadata")
+    links = Dict()
+    metadata = MetadataUIField()
 
-    created = FormatDatetime(attribute="created", format="medium")
+    created = FormatDatetime(format="medium")
 
-    updated = FormatDatetime(attribute="updated", format="medium")
+    updated = FormatDatetime(format="medium")
 
 
 class Marc21CatalogueSchema(Schema):
-    root = fields.Nested(Marc21CatalogueMetadataSchema(), attribute="root")
-    parent = fields.Nested(Marc21CatalogueMetadataSchema(), attribute="parent")
-    children = List(
-        fields.Nested(Marc21CatalogueMetadataSchema()),
-        attribute="children",
-    )
+    """Marc21 catalogue schema."""
+
+    root = Nested(Marc21CatalogueMetadataSchema())
+    node = Nested(Marc21CatalogueMetadataSchema())
+    parent = Nested(Marc21CatalogueMetadataSchema())
+    children = List(Nested(lambda: Marc21CatalogueSchema()))
