@@ -8,6 +8,11 @@
 Changes
 =======
 
+Version v0.0.2 (release 2025-07-21)
+
+- setup: change to reusable workflows
+
+
 Version v0.0.1 (release 2025-07-21)
 
 - base functionality, more a proof of concept than a working state
