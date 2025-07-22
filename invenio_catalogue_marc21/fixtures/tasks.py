@@ -86,7 +86,7 @@ def create_catalogue_marc21_record(
     root = draft_root.id
     parent = root
     children = [chapter.id for chapter in chapter_draft]
-    catalogue = {"root": root, "parent": parent, "children": children}
+    catalogue = {"root": "", "parent": "", "children": children}
 
     # update draft
     drafts = []
@@ -102,7 +102,7 @@ def create_catalogue_marc21_record(
         )
     )
 
-    catalogue = {"root": root, "parent": parent}
+    catalogue = {"root": root, "parent": parent, "children": []}
     for draft in chapter_draft:
         data = draft.data
         data["catalogue"] = catalogue

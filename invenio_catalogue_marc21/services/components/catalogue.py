@@ -40,9 +40,9 @@ class CatalogueComponent(ServiceComponent):
     # def new_version(self, identity, draft=None, record=None):
     #     """New version handler."""
 
-    # def publish(self, identity, draft=None, record=None):
-    #     """Publish handler."""
-    #     record.catalogue = draft.catalogue
+    def publish(self, identity, draft=None, record=None):
+        """Publish handler."""
+        record.catalogue = draft.catalogue
 
     # def import_files(self, identity, draft=None, record=None):
     #     """Import files handler."""
