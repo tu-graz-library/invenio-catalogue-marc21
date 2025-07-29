@@ -43,6 +43,13 @@ def is_catalogue(record, ctx):
     return "marc21-catalogue" in record.get("$schema", "")
 
 
+def is_base_marc21_record(record, ctx):
+    """Shortcut for links to determine if a record is a base marc21 record."""
+    # TODO!!!!!!!!
+    # this is only a shortcut. it should be implemented more directly
+    return not is_catalogue(record, ctx)
+
+
 DefaultServiceLinks = {
     "self": SwitchLinks(
         cond=[
@@ -55,7 +62,7 @@ DefaultServiceLinks = {
                 ),
             ),
             (
-                is_record,
+                is_base_marc21_record,
                 ConditionalLink(
                     cond=is_record,
                     if_=RecordLink("{+api}/publications/{id}"),
@@ -75,7 +82,7 @@ DefaultServiceLinks = {
                 ),
             ),
             (
-                is_record,
+                is_base_marc21_record,
                 ConditionalLink(
                     cond=is_record,
                     if_=RecordLink("{+ui}/publications/{id}"),
@@ -116,7 +123,7 @@ DefaultServiceLinks = {
                 RecordLink("{+ui}/catalogue/{id}/versions/latest"),
             ),
             (
-                is_record,
+                is_base_marc21_record,
                 RecordLink("{+ui}/publications/{id}/versions/latest"),
             ),
         ],
@@ -128,7 +135,7 @@ DefaultServiceLinks = {
                 RecordLink("{+ui}/catalogue/{id}/latest"),
             ),
             (
-                is_record,
+                is_base_marc21_record,
                 RecordLink("{+ui}/publications/{id}/latest"),
             ),
         ],
@@ -140,7 +147,7 @@ DefaultServiceLinks = {
                 RecordLink("{+ui}/catalogue/uploads/{id}", when=is_record),
             ),
             (
-                is_record,
+                is_base_marc21_record,
                 RecordLink("{+ui}/publications/uploads/{id}", when=is_record),
             ),
         ],
@@ -155,7 +162,7 @@ DefaultServiceLinks = {
                 ),
             ),
             (
-                is_record,
+                is_base_marc21_record,
                 RecordLink(
                     "{+api}/publications/{id}/draft/actions/publish",
                     when=is_draft,
