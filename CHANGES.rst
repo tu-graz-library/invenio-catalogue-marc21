@@ -8,6 +8,12 @@
 Changes
 =======
 
+Version v0.0.4 (released 2025-07-29)
+
+- fix(links): detect marc21 base record/draft
+- fix: various fixes
+
+
 Version v0.0.2 (release 2025-07-21)
 
 - setup: change to reusable workflows
