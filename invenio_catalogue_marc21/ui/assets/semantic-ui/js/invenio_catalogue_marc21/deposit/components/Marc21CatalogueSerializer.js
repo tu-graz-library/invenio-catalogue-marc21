@@ -6,8 +6,6 @@
 // modify it under the terms of the MIT License; see LICENSE file for more
 // details.
 
-import { get, set } from "lodash";
-
 import { Marc21RecordSerializer } from "@js/invenio_records_marc21/components";
 
 export class Marc21CatalogueSerializer extends Marc21RecordSerializer {

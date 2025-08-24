@@ -33,7 +33,13 @@ class CatalogueCheckField(SystemField):
     boolean value based on its presence.
     """
 
-    def __init__(self, key: str = "catalogue", value: str = "", dump: bool = False):
+    def __init__(
+        self,
+        key: str = "catalogue",
+        value: str = "",  # noqa: ARG002
+        *,
+        dump: bool = False,
+    ) -> None:
         """Initialize the CatalogueField.
 
         :param key: Attribute name of the CatalogueField to use for status check.

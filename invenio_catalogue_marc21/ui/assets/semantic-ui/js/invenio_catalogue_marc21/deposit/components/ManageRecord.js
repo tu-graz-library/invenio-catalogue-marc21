@@ -7,43 +7,39 @@
 // details.
 
 import React, { Component } from "react";
+import Overridable from "react-overridable";
 import { Card, Divider, Grid } from "semantic-ui-react";
 
+import { DeleteButton, PublishButton, SaveButton } from "@js/invenio_rdm_records";
 import {
-  AccessRightField,
-  DeleteButton,
-  FileUploader,
-  SaveButton,
-} from "@js/invenio_rdm_records";
-import {
-  AccessMessage,
-  EmbargoAccess,
   FilesAccess,
   MetadataAccess,
 } from "@js/invenio_rdm_records/src/deposit/fields/AccessField/components";
 import { TemplateField } from "@js/invenio_records_marc21/components";
 import { i18next } from "@translations/invenio_catalogue_marc21/i18next";
 
-import { ImportFromAlma } from "./ImportFromAlma";
+//import { ImportFromAlma } from "./ImportFromAlma";
+import { UploadFiles } from "./UploadFiles";
 
 export class ManageRecord extends Component {
-  state = {};
-
   constructor(props) {
     super(props);
   }
 
+  state = {};
+
   render() {
-    const { record, permissions, allowRecordRestriction, templates, config } =
-      this.props;
+    const { record, permissions, templates, config } = this.props;
+
     return (
       <Card>
         <Card.Content>
           <Grid relaxed>
             <Grid.Column width={16}>
               <SaveButton fluid />
+              <PublishButton fluid />
 
-              {permissions?.can_delete_draft && (
+              {permissions.can_delete_draft && (
                 <DeleteButton
                   fluid
                   // TODO: make is_published part of the API response
@@ -55,36 +51,38 @@ export class ManageRecord extends Component {
               {templates.length > 0 && (
                 <TemplateField
                   label={i18next.t("Templates")}
-                  labelIcon={"bookmark"}
+                  labelIcon="bookmark"
                   templates={templates}
                 />
               )}
 
-              {permissions?.showMetadataAccess && (
+              {permissions.showMetadataAccess && (
                 <>
                   <MetadataAccess record={record} />
                   <Divider hidden />
                 </>
               )}
 
-              {permissions?.showFileAccess && (
+              {permissions.showFileAccess && (
                 <>
                   <FilesAccess />
                   <Divider hidden />
                 </>
               )}
 
-              {permissions?.showImportFromAlma && <ImportFromAlma />}
-
-              {permissions?.showFileUploader && (
-                <FileUploader
-                  isDraftRecord={!record.is_published}
-                  quota={config.quota}
-                  decimalSizeDisplay={config.decimal_size_display}
-                />
+              {permissions.showFileUploader && (
+                <UploadFiles record={record} config={config} />
               )}
 
+              {/* {permissions.showImportFromAlma && <ImportFromAlma />} */}
 
+              <Overridable
+                id="InvenioCatalogueMarc21.Manage.Container"
+                record={record}
+                config={config}
+              >
+                <></>
+              </Overridable>
             </Grid.Column>
           </Grid>
         </Card.Content>

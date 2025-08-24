@@ -6,9 +6,6 @@
 // modify it under the terms of the MIT License; see LICENSE file for more
 // details.
 
-import React from "react";
-import { Segment } from "semantic-ui-react";
-
 export const CatalogueTreeItem = ({ nodeData = {}, nodeToggle }) => {
   return (
     <g>

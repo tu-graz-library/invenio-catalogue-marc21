@@ -66,6 +66,50 @@ class Marc21CatalogueAlmaProxyResource(RecordResource):
         return item.to_dict(), 200
 
 
+class Marc21CatalogueTasksResource(RecordResource):
+    """Marc21 Catalogue progress resource."""
+
+    config_name = "MARC21_CATALOGUE_TASKS"
+    default_config = config.Marc21CatalogueTasksConfig
+
+    def create_url_rules(self) -> list:
+        """Create the URL rules for the record resources."""
+        routes = self.config.routes
+
+        def p(route: str) -> str:
+            """Prefix a route with the URL prefix."""
+            return f"{self.config.url_prefix}{route}"
+
+        rules = [
+            route("GET", p(routes["progress"]), self.progress),
+            route("GET", p(routes["start"]), self.start),
+        ]
+        return rules
+
+    @request_view_args
+    @response_handler()
+    def progress(self) -> tuple:
+        """Get progress."""
+        pid = resource_requestctx.view_args["pid_value"]
+        item = self.service.progress(identity=g.identity, pid=pid)
+        return item.to_dict(), 200
+
+    @request_view_args
+    @request_search_args
+    @response_handler()
+    def start(self) -> tuple:
+        """Get progress."""
+        pid = resource_requestctx.view_args["pid_value"]
+        task = resource_requestctx.view_args["task"]
+        item = self.service.start(
+            identity=g.identity,
+            pid=pid,
+            task=task,
+            params=resource_requestctx.args["facets"],
+        )
+        return item.to_dict(), 200
+
+
 class Marc21CatalogueResource(RecordResource):
     """Marc21 Catalogue resource."""
 
@@ -144,7 +188,6 @@ class Marc21CatalogueRecordResource(RecordResource):
             return f"{self.config.url_prefix}{route}"
 
         rules = [
-            # route("GET", p(routes["list"]), self.search),
             route("POST", p(routes["list"]), self.create),
             route("GET", p(routes["item"]), self.read),
             route("PUT", p(routes["item"]), self.update),
@@ -170,6 +213,16 @@ class Marc21CatalogueRecordResource(RecordResource):
         )
         return item.to_dict(), 201
 
+    @request_view_args
+    @response_handler()
+    def edit(self) -> tuple:
+        """Edit an item."""
+        item = self.service.edit(
+            identity=g.identity,
+            id_=resource_requestctx.view_args["pid_value"],
+        )
+        return item.to_dict(), 200
+
     @request_headers
     @request_view_args
     @request_data
@@ -180,7 +233,6 @@ class Marc21CatalogueRecordResource(RecordResource):
         PUT /catalogue/:pid_value/draft
         """
         data = resource_requestctx.data
-        del data["tree"]  # TODO: should be done over the serializers
         item = self.service.update_draft(
             g.identity,
             resource_requestctx.view_args["pid_value"],

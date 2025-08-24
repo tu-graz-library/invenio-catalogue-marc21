@@ -14,6 +14,7 @@ from functools import wraps
 
 import click
 from flask.cli import with_appcontext
+from invenio_accounts.models import User
 from invenio_accounts.proxies import current_datastore
 from invenio_db import db
 
@@ -21,7 +22,7 @@ from .fixtures.demo import create_fake_catalogue_record
 from .fixtures.tasks import create_catalogue_marc21_record
 
 
-def get_user(user_email: str):
+def get_user(user_email: str) -> User:
     """Get user."""
     with db.session.no_autoflush:
         user = current_datastore.get_user_by_email(user_email)
@@ -39,7 +40,7 @@ def wrap_messages(before: str, after: str) -> Callable:
     def decorator[T](func: Callable[..., T]) -> Callable:
         @wraps(func)
         def wrapper(**kwargs: dict) -> None:
-            """Wrapper."""
+            """Wrap."""
             click.secho(before, fg="blue")
             try:
                 func(**kwargs)
@@ -85,15 +86,30 @@ def catalogue() -> None:
     type=int,
     help="Number of chapters will be created.",
 )
-@with_appcontext
+@click.option(
+    "--disable-files",
+    default=False,
+    is_flag=True,
+    type=bool,
+    help="disable file creation.",
+)
 @wrap_messages(
     before="Creating demo records...",
     after="Created records!",
 )
-def demo(user_email: str, n_records: int, n_chapters: int) -> None:
+def demo(
+    user_email: str,
+    n_records: int,
+    n_chapters: int,
+    *,
+    disable_files: bool,
+) -> None:
     """Create number of fake records for demo purposes."""
     user = get_user(user_email)
 
     for _ in range(n_records):
-        data, data_chapters, data_access = create_fake_catalogue_record(n_chapters)
+        data, data_chapters, data_access = create_fake_catalogue_record(
+            n_chapters,
+            files=not disable_files,
+        )
         create_catalogue_marc21_record.delay(user.id, data, data_chapters, data_access)

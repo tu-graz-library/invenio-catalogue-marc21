@@ -8,13 +8,53 @@
 
 """Catalogue service component for ."""
 
+from flask_principal import Identity
+from invenio_drafts_resources.records import Draft
 from invenio_drafts_resources.services.records.components import ServiceComponent
+from invenio_records_resources.records import Record
+
+
+def update_parent(service: dict, record: Record, identity: Identity) -> None:
+    """Update parent."""
+    parent_id = record.catalogue["parent"]
+    id_ = record["id"]
+    if not parent_id:
+        return
+
+    parent = service.edit(identity, parent_id)
+    parent_data = parent.data
+
+    if id_ in parent_data["catalogue"]["children"]:
+        return
+
+    title = record.metadata["fields"]["245"][0]["subfields"]["a"]
+    authors = record.metadata["fields"]["100"][0]["subfields"]["a"]  # TODO
+
+    parent_data["catalogue"]["children"].append(id_)
+    parent_data["children"].append(
+        {  # this should be moved to a Schema, but with performance checks!
+            "title": title,
+            "authors": authors,
+            "pid": id_,
+        },
+    )
+    service.update_draft(
+        identity=identity,
+        id_=parent_id,
+        data=parent_data,
+    )
 
 
 class CatalogueComponent(ServiceComponent):
     """Service component for Catalogue."""
 
-    def create(self, identity, data=None, record=None, errors=None):
+    def create(  # type: ignore[override]
+        self,
+        identity: Identity,  # noqa: ARG002
+        data: dict,
+        record: Record,
+        errors: dict | None = None,  # noqa: ARG002
+    ) -> None:
         """Create handler."""
         default_catalogue = {
             "root": record["id"],
@@ -22,30 +62,39 @@ class CatalogueComponent(ServiceComponent):
             "children": [],
         }
         record.catalogue = data.get("catalogue", default_catalogue)
+        record.children = data.get("children", [])
+        update_parent(self.service, record, identity)
 
-    # def read_draft(self, identity, draft=None):
-    #     """Update draft handler."""
-
-    def update_draft(self, identity, data=None, record=None, errors=None):
+    def update_draft(  # type: ignore[override]
+        self,
+        identity: Identity,  # noqa: ARG002
+        data: dict,
+        record: Record,
+        errors: dict | None = None,  # noqa: ARG002
+    ) -> None:
         """Update draft handler."""
         record.catalogue = data.get("catalogue", {})
+        record.children = data.get("children", [])
+        update_parent(self.service, record, identity)
 
-    # def delete_draft(self, identity, draft=None, record=None, force=False):
-    #     """Delete draft handler."""
-
-    def edit(self, identity, draft=None, record=None):
+    def edit(
+        self,
+        identity: Identity,  # noqa: ARG002
+        draft: Draft | None = None,
+        record: Record | None = None,
+    ) -> None:
         """Edit a record handler."""
-        record.catalogue = draft.catalogue
+        # TODO: check how the schema gets into the draft, because it is not there
+        draft.catalogue = record.catalogue
+        draft.children = record.children
+        draft.bucket.locked = False  # to update files, which is by default not allowed!
 
-    # def new_version(self, identity, draft=None, record=None):
-    #     """New version handler."""
-
-    def publish(self, identity, draft=None, record=None):
+    def publish(
+        self,
+        identity: Identity,
+        draft: Draft = None,
+        record: Record = None,
+    ) -> None:
         """Publish handler."""
         record.catalogue = draft.catalogue
-
-    # def import_files(self, identity, draft=None, record=None):
-    #     """Import files handler."""
-
-    # def post_publish(self, identity, record=None, is_published=False):
-    #     """Post publish handler."""
+        record.children = draft.children

@@ -21,7 +21,8 @@ def init(app: Flask) -> None:
     sregistry.register(ext.records_service, service_id="marc21-catalogue-records")
     sregistry.register(ext.records_service.files, service_id="marc21-catalogue-files")
     sregistry.register(
-        ext.records_service.draft_files, service_id="marc21-catalogue-draft-files"
+        ext.records_service.draft_files,
+        service_id="marc21-catalogue-draft-files",
     )
 
     # iregistry = app.extensions["invenio-indexer"].registry
@@ -47,3 +48,9 @@ def create_alma_proxy_bp(app: Flask) -> Blueprint:
     """Create proxy blueprint."""
     ext = app.extensions["invenio-catalogue-marc21"]
     return ext.alma_proxy.as_blueprint()
+
+
+def create_tasks_bp(app: Flask) -> Blueprint:
+    """Create tasks blueprint."""
+    ext = app.extensions["invenio-catalogue-marc21"]
+    return ext.tasks_resource.as_blueprint()

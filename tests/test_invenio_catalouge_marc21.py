@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -10,30 +10,28 @@
 
 from flask import Flask
 
-from invenio_catalogue_marc21 import InveniocatalogueMarc21
+from invenio_catalogue_marc21 import InvenioCatalogueMarc21, __version__
 
 
-def test_version():
+def test_version() -> None:
     """Test version import."""
-    from invenio_catalogue_marc21 import __version__
-
     assert __version__
 
 
-def test_init():
+def test_init() -> None:
     """Test extension initialization."""
     app = Flask("testapp")
-    ext = InveniocatalogueMarc21(app)
+    ext = InvenioCatalogueMarc21(app)
     assert "invenio-catalogue-marc21" in app.extensions
 
     app = Flask("testapp")
-    ext = InveniocatalogueMarc21()
+    ext = InvenioCatalogueMarc21()
     assert "invenio-catalogue-marc21" not in app.extensions
     ext.init_app(app)
     assert "invenio-catalogue-marc21" in app.extensions
 
 
-def test_view(base_client):
+def test_view(base_client) -> None:
     """Test view."""
     res = base_client.get("/")
     assert res.status_code == 200

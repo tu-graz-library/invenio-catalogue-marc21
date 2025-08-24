@@ -10,11 +10,15 @@
 
 from invenio_records_marc21.services import Marc21RecordServiceConfig
 from invenio_records_resources.services.base.config import FromConfig
+from invenio_records_resources.services.records.results import RecordItem
 
-from ..records import Marc21CatalogueDraft, Marc21CatalogueRecord
+from ..records import (
+    Marc21CatalogueDraft,
+    Marc21CatalogueRecord,
+    Marc21CatalogueTasks,
+)
 from .components import DefaultCatalogueComponents
 from .links import DefaultServiceLinks
-from .results import RecordItem
 from .schemas import Marc21CatalogueSchema
 
 
@@ -24,7 +28,7 @@ class Marc21CatalogueServiceConfig(Marc21RecordServiceConfig):
     record_cls = Marc21CatalogueRecord
     draft_cls = Marc21CatalogueDraft
     schema = Marc21CatalogueSchema
-    # schema_parent = Marc21ParentSchema
+
     result_item_cls = RecordItem
     schema_secret_link = None
     review = None
@@ -38,3 +42,9 @@ class Marc21CatalogueServiceConfig(Marc21RecordServiceConfig):
         "MARC21_CATALOGUE_SERVICE_COMPONENTS",
         default=DefaultCatalogueComponents,
     )
+
+
+class Marc21CatalogueTasksServiceConfig:
+    """Config."""
+
+    record_cls = Marc21CatalogueTasks

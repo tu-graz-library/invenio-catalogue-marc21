@@ -11,7 +11,7 @@
 
 from invenio_records_marc21.services.schemas import Marc21RecordSchema
 from marshmallow import Schema
-from marshmallow.fields import List, Str
+from marshmallow.fields import Dict, List, Str
 from marshmallow_utils.fields import NestedAttribute
 
 
@@ -27,3 +27,4 @@ class Marc21CatalogueSchema(Marc21RecordSchema):
     """Marc21CatalogueSchema."""
 
     catalogue = NestedAttribute(CatalogueSchema)
+    children = List(Dict())

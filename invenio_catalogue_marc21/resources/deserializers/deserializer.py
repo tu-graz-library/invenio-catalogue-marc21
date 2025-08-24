@@ -9,6 +9,7 @@
 """Deserializers."""
 
 from flask_resources import JSONDeserializer
+from marshmallow_utils.context import context_schema
 
 from .schema import Marc21DeserializeSchema
 
@@ -23,4 +24,15 @@ class Marc21CatalogueDeserializer(JSONDeserializer):
     def deserialize(self, data: dict) -> None:
         """Deserialize."""
         data = super().deserialize(data)
-        return self.schema().load(data)
+
+        def _permission_check(*_: dict, **__: dict) -> bool:
+            return True
+
+        token = context_schema.set({"field_permission_check": _permission_check})
+
+        schema = self.schema()
+
+        try:
+            return schema.load(data)
+        finally:
+            context_schema.reset(token)

@@ -11,11 +11,12 @@
 from flask import current_app, render_template
 from flask_login import login_required
 from invenio_records_marc21.ui.theme.deposit import empty_record as base_empty_record
+from invenio_records_resources.services.files.results import FileItem
+from invenio_records_resources.services.records.results import RecordItem
 from invenio_stats.proxies import current_stats
 
 from ..resources.serializers import (
     Marc21CatalogueDepositSerializer,
-    Marc21CatalogueSerializer,
     Marc21CatalogueUIJSONSerializer,
 )
 from .decorators import (
@@ -29,7 +30,7 @@ from .deposit import deposit_config
 
 def empty_record() -> dict:
     """Create an empty record."""
-    record = base_empty_record()
+    record: dict = base_empty_record()
     record["catalogue"] = {
         "root": "",
         "parent": "",
@@ -43,11 +44,12 @@ def empty_record() -> dict:
 @pass_record_or_draft
 @pass_record_files
 def record_detail(
-    record=None,
-    files=None,
-    pid_value=None,
-    is_preview=False,
-):
+    record: RecordItem,
+    files: FileItem,
+    pid_value: str,
+    *,
+    is_preview: bool = False,
+) -> str:
     """Record detail page (aka landing page)."""
     files_dict = files.to_dict() if files else {}
 
@@ -55,26 +57,27 @@ def record_detail(
     if record is not None and emitter is not None:
         emitter(current_app, record=record._record, via_api=False)
 
-    record_ui = Marc21CatalogueUIJSONSerializer().dump_obj(record.to_dict())
-
-    tree = Marc21CatalogueSerializer().dump_obj(record.to_dict()["tree"])
+    children = record._record.children
+    serializer = Marc21CatalogueUIJSONSerializer()
+    record_ui = serializer.dump_obj(record.to_dict())
 
     return render_template(
         "invenio_catalogue_marc21/landing_page/record.html",
-        record=record_ui,
+        record=record,
+        record_ui=record_ui,
         pid=pid_value,
         files=files_dict,
         permissions=record.has_permissions_to(
             ["edit", "new_version", "manage", "update_draft", "read_files"],
         ),
-        tree=tree,
+        children=children,
         is_preview=is_preview,
         is_draft=record._record.is_draft,
     )
 
 
 @login_required
-def deposit_create():
+def deposit_create() -> str:
     """Create a new deposit page."""
     # TODO: checkout to in deposit_edit
     # the permission system has to be established yet
@@ -83,7 +86,13 @@ def deposit_create():
         "showFileAccess": False,
         "showFileUploader": True,
         "showImportFromAlma": True,
+        "showUploadCSV": True,
     }
+
+    expand_javascript = current_app.config.get(
+        "MARC21_CATALOGUE_JAVASCRIPT_EXTENDABLE",
+        [],
+    )
 
     return render_template(
         "invenio_catalogue_marc21/deposit/index.html",
@@ -92,6 +101,7 @@ def deposit_create():
         # templates=deposit_templates(),
         forms_config=deposit_config(),
         permissions=permissions,
+        expand_javascript=expand_javascript,
     )
 
 
@@ -99,10 +109,10 @@ def deposit_create():
 @pass_draft
 @pass_draft_files
 def deposit_edit(
-    draft=None,
-    draft_files=None,
-    pid_value=None,
-):
+    draft: RecordItem,
+    draft_files: FileItem,
+    pid_value: str,
+) -> str:
     """Edit an existing deposit."""
     serializer = Marc21CatalogueDepositSerializer()
     serialized_record = serializer.dump_obj(draft.to_dict())
@@ -120,11 +130,18 @@ def deposit_edit(
     # TODO: should be clearly temporarly ;)
     permissions["showImportFromAlma"] = True
     permissions["showFileUploader"] = True
+    permissions["showUploadCSV"] = True
+
+    expand_javascript = current_app.config.get(
+        "MARC21_CATALOGUE_JAVASCRIPT_EXTENDABLE",
+        [],
+    )
 
     return render_template(
         "invenio_catalogue_marc21/deposit/index.html",
-        forms_config=deposit_config(apiUrl=f"/api/catalogue/{pid_value}/draft"),
+        forms_config=deposit_config(api_url=f"/api/catalogue/{pid_value}/draft"),
         record=serialized_record,
         files=draft_files.to_dict(),
         permissions=permissions,
+        expand_javascript=expand_javascript,
     )
