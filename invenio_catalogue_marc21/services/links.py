@@ -12,6 +12,7 @@
 
 from invenio_drafts_resources.services.records.config import is_draft, is_record
 from invenio_rdm_records.services.config import has_doi, is_record_and_has_doi
+from invenio_records_resources.records import Record
 from invenio_records_resources.services import ConditionalLink
 from invenio_records_resources.services.base.links import Link
 from invenio_records_resources.services.records.links import RecordLink
@@ -20,30 +21,32 @@ from invenio_records_resources.services.records.links import RecordLink
 class SwitchLinks:
     """Switch link."""
 
-    def __init__(self, cond: list[tuple] | None = None) -> None:
+    def __init__(self, cond: list[tuple]) -> None:
         """Construct."""
         # conditions are a tuple of 1: is the condition and 2: the template
         self._conditions = cond
 
-    def should_render(self, obj, ctx):
+    def should_render(self, obj: Record, ctx: dict) -> bool:
         """Determine if the link should be rendered."""
         for condition, template in self._conditions:
             if condition(obj, ctx):
                 return template.should_render(obj, ctx)
+        return False
 
-    def expand(self, obj, ctx):
+    def expand(self, obj: Record, ctx: dict) -> str | None:
         """Determine if the link should be rendered."""
         for condition, template in self._conditions:
             if condition(obj, ctx):
                 return template.expand(obj, ctx)
+        return None
 
 
-def is_catalogue(record, ctx):
+def is_catalogue(record: Record, _: dict) -> bool:
     """Shortcut for links to determine if record is a catalogue record."""
     return "marc21-catalogue" in record.get("$schema", "")
 
 
-def is_base_marc21_record(record, ctx):
+def is_base_marc21_record(record: Record, ctx: dict) -> bool:
     """Shortcut for links to determine if a record is a base marc21 record."""
     # TODO!!!!!!!!
     # this is only a shortcut. it should be implemented more directly
@@ -149,6 +152,18 @@ DefaultServiceLinks = {
             (
                 is_base_marc21_record,
                 RecordLink("{+ui}/publications/uploads/{id}", when=is_record),
+            ),
+        ],
+    ),
+    "edit": SwitchLinks(
+        cond=[
+            (
+                is_catalogue,
+                RecordLink("{+api}/catalogue/{id}/draft"),
+            ),
+            (
+                is_base_marc21_record,
+                RecordLink("{+api}/publications/{id}/draft"),
             ),
         ],
     ),

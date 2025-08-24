@@ -8,11 +8,10 @@
 
 """Marc21 Resources serializers module."""
 
-from .schema import Marc21CatalogueUISchema, Marc21CatalogueUIXMLSchema
+from .schema import Marc21CatalogueUISchema
 from .serializer import Marc21CatalogueUIJSONSerializer
 
 __all__ = (
     "Marc21CatalogueUIJSONSerializer",
     "Marc21CatalogueUISchema",
-    "Marc21CatalogueUIXMLSchema",
 )

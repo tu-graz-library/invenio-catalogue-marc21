@@ -9,8 +9,9 @@
 import axios from "axios";
 import { hierarchy, tree } from "d3-hierarchy";
 import { linkHorizontal } from "d3-shape";
-import React, { Component, createRef, PureComponent } from "react";
+import React, { Component, createRef } from "react";
 import { connect } from "react-redux";
+
 import { ContextMenu } from "./ContextMenu";
 
 class TreeCmp extends Component {
@@ -29,7 +30,8 @@ class TreeCmp extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.data !== this.state.data) {
+    const { data } = this.state;
+    if (prevState.data !== data) {
       this.update();
     }
   }
@@ -40,7 +42,7 @@ class TreeCmp extends Component {
         withCredentials: true,
         xsrfCookieName: "csrftoken",
         xsrfHeaderName: "X-CSRFToken",
-        headers: { "Accept": "application/json" },
+        headers: { Accept: "application/json" },
       };
       let axiosWithConfig = axios.create(apiConfig);
       const url = `/api/catalogue/${parent.data.node}/add`;
@@ -58,7 +60,7 @@ class TreeCmp extends Component {
         withCredentials: true,
         xsrfCookieName: "csrftoken",
         xsrfHeaderName: "X-CSRFToken",
-        headers: { "Accept": "application/json" },
+        headers: { Accept: "application/json" },
       };
       let axiosWithConfig = axios.create(apiConfig);
       const url = `/api/catalogue/${node.data.node}/edit`;
@@ -73,12 +75,13 @@ class TreeCmp extends Component {
   update = () => {
     const width = 800;
     const height = 500;
-    const root = hierarchy(this.state.data);
+    const { data } = this.state;
+    const root = hierarchy(data);
     tree().size([height - 100, width - 200])(root);
 
     const descendants = root.descendants();
     descendants.forEach((n, i) => (n.x = i * 30));
-    descendants.forEach((n, i) => (n.y = n.depth * 50));
+    descendants.forEach((n) => (n.y = n.depth * 50));
 
     this.setState({ tree: root });
   };
@@ -97,14 +100,14 @@ class TreeCmp extends Component {
 
   handleMenuClick = (action, node) => {
     switch (action) {
-    case "rename":
-      break;
-    case "add":
-      this.add(node);
-      break;
-    case "edit":
-      this.edit(node);
-      break;
+      case "rename":
+        break;
+      case "add":
+        this.add(node);
+        break;
+      case "edit":
+        this.edit(node);
+        break;
     }
 
     const state = {
@@ -126,10 +129,10 @@ class TreeCmp extends Component {
   add = async (parent) => {
     const parentId = parent.data.node;
     const rootId = parent.data.root == "" ? parent.data.node : parent.data.root;
-    const data = {"catalogue": {"parent": parentId, "root": rootId, "children": []}};
+    const data = { catalogue: { parent: parentId, root: rootId, children: [] } };
     const newChild = await this.addNode(parent, data);
 
-    const {saveAction} = this.props;
+    const { saveAction } = this.props;
 
     saveAction(newChild);
 
@@ -142,10 +145,10 @@ class TreeCmp extends Component {
   };
 
   edit = async (node) => {
-    const {saveAction} = this.props;
+    const { saveAction } = this.props;
     const child = await this.editNode(node);
     saveAction(child);
-  }
+  };
 
   render() {
     const { tree, contextMenu } = this.state;
@@ -154,7 +157,7 @@ class TreeCmp extends Component {
       <>
         <svg
           width="800"
-          height="1000"
+          height={tree && tree.descendants().length * 30 + 100}
           ref={this.svgRef}
           onClick={() => this.setState({ contextMenu: { visible: false } })}
         >
@@ -184,7 +187,8 @@ class TreeCmp extends Component {
                     x={node.children ? 90 : 10}
                     textAnchor={node.children ? "end" : "start"}
                   >
-                    {node.data.name}
+                    {node.data.name[0].substring(0, 50)}
+                    {node.data.name[0].length > 50 && "..."}
                   </text>
                 </g>
               ))}
@@ -201,7 +205,7 @@ function save(data) {
   // maybe not necessary that complicated but it does work like that
   // name should be different, because it does not save the record
   // it does only updating the record
-  return async (dispatch, getState, config) => {
+  return async (dispatch) => {
     dispatch({
       type: "DRAFT_SAVE_SUCCEEDED",
       payload: { data: data },
@@ -215,7 +219,4 @@ const mapDispatchToProps = (dispatch) => ({
   saveAction: (values) => dispatch(save(values)),
 });
 
-export const Tree = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TreeCmp);
+export const Tree = connect(mapStateToProps, mapDispatchToProps)(TreeCmp);

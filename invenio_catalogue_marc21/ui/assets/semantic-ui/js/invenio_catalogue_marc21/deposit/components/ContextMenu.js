@@ -6,7 +6,7 @@
 // modify it under the terms of the MIT License; see LICENSE file for more
 // details.
 
-import React, { Component, PureComponent } from "react";
+import { PureComponent } from "react";
 import { Menu, Popup } from "semantic-ui-react";
 
 export class ContextMenu extends PureComponent {
@@ -29,13 +29,22 @@ export class ContextMenu extends PureComponent {
         }}
       >
         <Menu vertical>
-          <Menu.Item style={{ cursor: "pointer" }} onClick={() => onAction("add", node)}>
+          <Menu.Item
+            style={{ cursor: "pointer" }}
+            onClick={() => onAction("add", node)}
+          >
             Add
           </Menu.Item>
-          <Menu.Item style={{ cursor: "pointer" }} onClick={() => onAction("remove", node)}>
+          <Menu.Item
+            style={{ cursor: "pointer" }}
+            onClick={() => onAction("remove", node)}
+          >
             Remove
           </Menu.Item>
-          <Menu.Item style={{ cursor: "pointer" }} onClick={() => onAction("edit", node)}>
+          <Menu.Item
+            style={{ cursor: "pointer" }}
+            onClick={() => onAction("edit", node)}
+          >
             Edit
           </Menu.Item>
         </Menu>

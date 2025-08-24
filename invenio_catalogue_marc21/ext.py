@@ -24,15 +24,22 @@ from .resources import (
     Marc21CatalogueRecordResourceConfig,
     Marc21CatalogueResource,
     Marc21CatalogueResourceConfig,
+    Marc21CatalogueTasksConfig,
+    Marc21CatalogueTasksResource,
 )
-from .services import Marc21CatalogueService, Marc21CatalogueServiceConfig
+from .services import (
+    Marc21CatalogueService,
+    Marc21CatalogueServiceConfig,
+    Marc21CatalogueTasksService,
+    Marc21CatalogueTasksServiceConfig,
+)
 from .views import init
 
 
 class InvenioCatalogueMarc21:
     """invenio-catalogue-marc21 extension."""
 
-    def __init__(self, app: Flask = None) -> None:
+    def __init__(self, app: Flask | None = None) -> None:
         """Extension initialization."""
         if app:
             self.init_app(app)
@@ -51,25 +58,31 @@ class InvenioCatalogueMarc21:
             if k.startswith("MARC21_CATALOGUE_"):
                 app.config.setdefault(k, getattr(config, k))
 
-    def service_configs(self, app: Flask) -> type:
+    def service_configs(self, app: Flask) -> dict:
         """Customize service configs."""
-
-        class ServiceConfigs:
-            record = Marc21CatalogueServiceConfig.build(app)
-            file = Marc21RecordFilesServiceConfig.build(app)
-            file_draft = Marc21DraftFilesServiceConfig.build(app)
-
-        return ServiceConfigs
+        return {
+            "record": Marc21CatalogueServiceConfig.build(app),
+            "file": Marc21RecordFilesServiceConfig.build(app),
+            "file_draft": Marc21DraftFilesServiceConfig.build(app),
+        }
 
     def init_services(self, app: Flask) -> None:
         """Initialize services."""
         service_config = self.service_configs(app)
 
         self.records_service = Marc21CatalogueService(
-            config=service_config.record,
-            files_service=FileService(service_config.file),
-            draft_files_service=FileService(service_config.file_draft),
-            pids_service=PIDsService(service_config.record, PIDManager),
+            config=service_config["record"],
+            files_service=FileService(service_config["file"]),
+            draft_files_service=FileService(service_config["file_draft"]),
+            pids_service=PIDsService(service_config["record"], PIDManager),
+        )
+
+        self.files_service = FileService(service_config["file"])
+
+        self.draft_files_service = FileService(service_config["file_draft"])
+
+        self.tasks_service = Marc21CatalogueTasksService(
+            config=Marc21CatalogueTasksServiceConfig,
         )
 
     def init_resources(self) -> None:
@@ -85,6 +98,10 @@ class InvenioCatalogueMarc21:
         self.alma_proxy = Marc21CatalogueAlmaProxyResource(
             service=self.records_service,
             config=Marc21CatalogueAlmaProxyResourceConfig,
+        )
+        self.tasks_resource = Marc21CatalogueTasksResource(
+            service=self.tasks_service,
+            config=Marc21CatalogueTasksConfig,
         )
 
 

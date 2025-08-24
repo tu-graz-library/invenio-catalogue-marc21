@@ -17,17 +17,17 @@ from flask_login import current_user
 #
 # Error handlers
 #
-def not_found_error(error) -> tuple[str, int]:
+def not_found_error(*_: tuple, **__: dict) -> tuple[str, int]:
     """Handle 'Not Found' errors."""
     return render_template(current_app.config["THEME_404_TEMPLATE"]), 404
 
 
-def record_tombstone_error(error) -> tuple[str, int]:
+def record_tombstone_error(**__: dict) -> tuple[str, int]:
     """Tombstone page."""
     return render_template("invenio_records_marc21/tombstone.html"), 410
 
 
-def record_permission_denied_error(error) -> tuple[str, int]:
+def record_permission_denied_error(**__: dict) -> tuple[str, int]:
     """Handle permission denier error on record views."""
     if not current_user.is_authenticated:
         # trigger the flask-login unauthorized handler

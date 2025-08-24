@@ -8,6 +8,7 @@
 
 """Blueprints."""
 
+from typing import cast
 
 from flask import Blueprint, Flask
 from invenio_pidstore.errors import PIDDeletedError, PIDDoesNotExistError
@@ -27,7 +28,7 @@ from .views import deposit_create, deposit_edit, record_detail
 #
 def create_blueprint(app: Flask) -> Blueprint:
     """Register blueprint routes on app."""
-    routes = app.config.get("MARC21_CATALOGUE_UI_ENDPOINTS")
+    routes = cast(dict[str, str], app.config.get("MARC21_CATALOGUE_UI_ENDPOINTS"))
 
     blueprint = Blueprint(
         "invenio_catalogue_marc21",

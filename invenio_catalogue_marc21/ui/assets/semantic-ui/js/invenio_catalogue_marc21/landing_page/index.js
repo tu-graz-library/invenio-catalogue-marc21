@@ -1,6 +1,6 @@
 // This file is part of Invenio.
 //
-// Copyright (C) 2024 Graz University of Technology.
+// Copyright (C) 2024-2025 Graz University of Technology.
 //
 // Invenio-Catalogue-Marc21 is free software; you can redistribute it and/or
 // modify it under the terms of the MIT License; see LICENSE file for more
@@ -10,9 +10,9 @@ import $ from "jquery";
 import React from "react";
 import ReactDOM from "react-dom";
 
+import { ExportDropdown } from "@js/invenio_app_rdm/landing_page/ExportDropdown";
 import { RecordManagement } from "@js/invenio_records_marc21/Marc21RecordManagement";
 import { RecordVersionsList } from "@js/invenio_records_marc21/Marc21RecordVersionsList";
-import { ExportDropdown } from "@js/invenio_app_rdm/landing_page/ExportDropdown";
 
 const recordManagementAppDiv = document.getElementById("recordManagement");
 const recordVersionsAppDiv = document.getElementById("recordVersions");
@@ -40,9 +40,7 @@ if (recordVersionsAppDiv) {
 
 if (recordExportDownloadDiv) {
   ReactDOM.render(
-    <ExportDropdown
-      formats={JSON.parse(recordExportDownloadDiv.dataset.formats)}
-    />,
+    <ExportDropdown formats={JSON.parse(recordExportDownloadDiv.dataset.formats)} />,
     recordExportDownloadDiv
   );
 }

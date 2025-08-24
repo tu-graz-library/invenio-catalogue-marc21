@@ -298,9 +298,9 @@ def fake_feature_date(days: int = 365) -> str:
     return _date.strftime("%Y-%m-%d")
 
 
-def create_fake_catalogue_record(n_chapters: int) -> tuple:
+def create_fake_catalogue_record(n_chapters: int, *, files: bool) -> tuple:
     """Create records for demo purposes in backend."""
-    data = create_fake_data()
+    data = create_fake_data(files=files)
     data_access = {"files": "public", "record": "public"}
     data["access"] = data_access
     data_chapters = [create_fake_data(chapter=True) for _ in range(n_chapters)]

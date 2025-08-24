@@ -13,11 +13,13 @@ from .config import (
     Marc21CatalogueAlmaProxyResourceConfig,
     Marc21CatalogueRecordResourceConfig,
     Marc21CatalogueResourceConfig,
+    Marc21CatalogueTasksConfig,
 )
 from .resources import (
     Marc21CatalogueAlmaProxyResource,
     Marc21CatalogueRecordResource,
     Marc21CatalogueResource,
+    Marc21CatalogueTasksResource,
 )
 
 __all__ = (
@@ -27,4 +29,6 @@ __all__ = (
     "Marc21CatalogueRecordResourceConfig",
     "Marc21CatalogueResource",
     "Marc21CatalogueResourceConfig",
+    "Marc21CatalogueTasksConfig",
+    "Marc21CatalogueTasksResource",
 )

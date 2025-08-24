@@ -32,7 +32,7 @@ def deposit_templates() -> list:
     return []
 
 
-def deposit_config(**kwargs: dict) -> dict:
+def deposit_config(api_url: str = "") -> dict:
     """Create an deposit configuration."""
     app_config = current_app.config
     jsonschema = current_app.extensions["invenio-jsonschemas"]
@@ -51,6 +51,9 @@ def deposit_config(**kwargs: dict) -> dict:
         "apiHeaders": app_config.get("MARC21_API_HEADERS"),
         # UploadFilesToolbar disable file upload
         "canHaveMetadataOnlyRecords": True,
-        **kwargs,
     }
+
+    if api_url:
+        config["apiUrl"] = api_url
+
     return config

@@ -10,51 +10,60 @@
 
 """Marc21 decorators backend."""
 
+from collections.abc import Callable
 from functools import wraps
 
 from flask import g
 from invenio_records_resources.services.errors import PermissionDeniedError
-from sqlalchemy.orm.exc import NoResultFound
+from invenio_records_resources.services.files import FileService
+from invenio_records_resources.services.records import RecordService
+from sqlalchemy.exc import NoResultFound
 
 from ..proxies import current_catalogue_marc21
 
 
-def _service():
+def _service() -> RecordService:
     """Get the record service."""
     return current_catalogue_marc21.records_service
 
 
-def _files_service():
+def _files_service() -> FileService:
     """Get the record files service."""
     return current_catalogue_marc21.records_service.files
 
 
-def _draft_files_service():
+def _draft_files_service() -> FileService:
     """Get the record files service."""
     return current_catalogue_marc21.records_service.draft_files
 
 
-def pass_draft(func):
-    """Decorator to retrieve the draft using the record service."""
+def pass_draft[T](func: Callable[..., T]) -> Callable:
+    """Decorate to retrieve the draft using the record service."""
 
     @wraps(func)
-    def view(**kwargs):
+    def view(**kwargs: dict) -> T:
+        """Wrap."""
         pid_value = kwargs.get("pid_value")
+
+        # i am not sure if doing an edit before is the correct way, but with
+        # this the draft will exist for sure and the schema will also exist
+        _service().edit(id_=pid_value, identity=g.identity)
         kwargs["draft"] = _service().read_draft(id_=pid_value, identity=g.identity)
         return func(**kwargs)
 
     return view
 
 
-def pass_draft_files(func):
+def pass_draft_files[T](func: Callable[..., T]) -> Callable:
     """Decorate a view to pass a draft's files using the files service."""
 
     @wraps(func)
-    def view(**kwargs):
+    def view(**kwargs: dict) -> T:
         try:
             pid_value = kwargs.get("pid_value")
             files = _draft_files_service().list_files(
-                id_=pid_value, identity=g.identity
+                id_=pid_value,
+                identity=g.identity,
             )
             kwargs["draft_files"] = files
 
@@ -69,11 +78,11 @@ def pass_draft_files(func):
     return view
 
 
-def pass_record_or_draft(f):
+def pass_record_or_draft[T](f: Callable[..., T]) -> Callable:
     """Decorate to retrieve the record or draft using the record service."""
 
     @wraps(f)
-    def view(**kwargs):
+    def view(**kwargs: dict) -> T:
         pid_value = kwargs.get("pid_value")
         is_preview = kwargs.get("is_preview")
 
@@ -81,7 +90,10 @@ def pass_record_or_draft(f):
             try:
                 record = _service().read_draft(id_=pid_value, identity=g.identity)
             except NoResultFound:
-                record = _service().read(id_=pid_value, identity=g.identity)
+                try:
+                    record = _service().read(id_=pid_value, identity=g.identity)
+                except NoResultFound:
+                    record = _service().edit(id_=pid_value, identity=g.identity)
         else:
             record = _service().read(id_=pid_value, identity=g.identity)
 
@@ -91,17 +103,17 @@ def pass_record_or_draft(f):
     return view
 
 
-def pass_record_files(f):
+def pass_record_files[T](f: Callable[..., T]) -> Callable:
     """Decorate a view to pass a record's files using the files service."""
 
     @wraps(f)
-    def view(**kwargs):
+    def view(**kwargs: dict) -> T:
         is_preview = kwargs.get("is_preview")
         pid_value = kwargs.get("pid_value")
 
         try:
             if is_preview:
-                files = draft_files_service().list_files(
+                files = _draft_files_service().list_files(
                     id_=pid_value,
                     identity=g.identit,
                 )

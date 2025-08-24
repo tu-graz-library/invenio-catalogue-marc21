@@ -10,11 +10,6 @@
 
 """Serializers base."""
 
-from .schema import CatalogueSchema, Marc21CatalogueSchema
-from .serializer import Marc21CatalogueXMLSerializer
+from .schema import CatalogueSchema
 
-__all__ = (
-    "CatalogueSchema",
-    "Marc21CatalogueSchema",
-    "Marc21CatalogueXMLSerializer",
-)
+__all__ = ("CatalogueSchema",)

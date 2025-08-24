@@ -10,28 +10,28 @@
 
 from functools import partial
 
+from flask_resources import BaseObjectSchema
 from invenio_i18n import get_locale
 from invenio_rdm_records.resources.serializers.ui.fields import AccessStatusField
-from marshmallow.fields import Dict
 from marshmallow_utils.fields import FormatDate as BaseFormatDatetime
+from marshmallow_utils.fields import SanitizedUnicode
 
-from ..base import Marc21CatalogueSchema
 from ..fields import MetadataUIField
 
 FormatDatetime = partial(BaseFormatDatetime, locale=get_locale)
 
 
-class Marc21CatalogueUISchema(Marc21CatalogueSchema):
+class Marc21CatalogueUISchema(BaseObjectSchema):
     """Schema for dumping extra information for the UI."""
 
+    object_key = "ui"
+
     additional = (
-        # "access",
         "status",
-        # "parent",
         "links",
-        # "files",
-        # "is_published",
     )
+
+    id = SanitizedUnicode()
 
     access_status = AccessStatusField(attribute="access", dump_only=True)
 
@@ -40,9 +40,3 @@ class Marc21CatalogueUISchema(Marc21CatalogueSchema):
     created = FormatDatetime(format="long")
 
     updated = FormatDatetime(format="long")
-
-
-class Marc21CatalogueUIXMLSchema(Marc21CatalogueUISchema):
-    """Schema for dumping extra information for the UI."""
-
-    metadata = Dict()

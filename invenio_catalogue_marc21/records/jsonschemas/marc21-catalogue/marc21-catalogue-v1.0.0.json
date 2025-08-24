@@ -96,6 +96,25 @@
           }
         }
       }
+    },
+    "children": {
+      "type": "array",
+      "description": "Children.",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "description": "title",
+          "type": "str"
+        },
+        "authors": {
+          "description": "authors",
+          "type": "str"
+        },
+        "pid": {
+          "description": "id",
+          "type": "str"
+        }
+      }
     }
   }
 }

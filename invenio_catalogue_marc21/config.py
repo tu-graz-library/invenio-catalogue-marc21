@@ -18,3 +18,6 @@ MARC21_CATALOGUE_UI_ENDPOINTS = {
     "deposit-edit": "/uploads/<pid_value>",
 }
 """UI endpoints for invenio-catalogue-marc21."""
+
+MARC21_CATALOGUE_JAVASCRIPT_EXTENDABLE: list[str] = []
+"""Extend javascript."""

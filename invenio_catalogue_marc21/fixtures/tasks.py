@@ -8,6 +8,7 @@
 
 """Marc21 catalogue fixture tasks."""
 
+from pathlib import Path
 
 from celery import shared_task
 from flask_principal import Identity, RoleNeed, UserNeed
@@ -17,12 +18,13 @@ from invenio_access.permissions import (
     system_identity,
     system_user_id,
 )
+from invenio_records_resources.services.files import FileService
 
 from ..proxies import current_catalogue_marc21
 from .demo import create_fake_file
 
 
-def get_user_identity(user_id: int) -> Identity:
+def get_user_identity(user_id: str) -> Identity:
     """Get user identity."""
     identity = Identity(user_id)
     # TODO: we need to get the user roles for specific user groups and add to the identity
@@ -33,7 +35,12 @@ def get_user_identity(user_id: int) -> Identity:
     return identity
 
 
-def add_file_to_record(file_service, recid, file_path, identity):
+def add_file_to_record(
+    file_service: FileService,
+    recid: str,
+    file_path: Path,
+    identity: Identity,
+) -> None:
     """Add file to record."""
     filename = "Report.pdf"
     data = [{"key": filename}]
@@ -41,18 +48,21 @@ def add_file_to_record(file_service, recid, file_path, identity):
     with file_path.open(mode="rb") as file_pointer:
         file_service.init_files(id_=recid, identity=identity, data=data)
         file_service.set_file_content(
-            id_=recid, file_key=filename, identity=identity, stream=file_pointer
+            id_=recid,
+            file_key=filename,
+            identity=identity,
+            stream=file_pointer,
         )
         file_service.commit_file(id_=recid, file_key=filename, identity=identity)
 
 
 @shared_task
 def create_catalogue_marc21_record(
-    user_id,
-    data,
+    user_id: str,
+    data: dict,
     data_chapters: list,
-    access,
-):
+    access: dict,
+) -> None:
     """Create records for demo purposes."""
     if user_id == system_user_id:
         identity = system_identity
@@ -66,8 +76,9 @@ def create_catalogue_marc21_record(
         access=access,
     )
     # add fake file to record
-    file_path = create_fake_file()
-    add_file_to_record(service.draft_files, draft_root.id, file_path, identity)
+    if data["files"]["enabled"]:
+        file_path = create_fake_file()
+        add_file_to_record(service.draft_files, draft_root.id, file_path, identity)
 
     # create chapters as draft to have the pid
     chapter_draft = []
@@ -99,7 +110,7 @@ def create_catalogue_marc21_record(
             id_=draft_root.id,
             data=data,
             identity=identity,
-        )
+        ),
     )
 
     catalogue = {"root": root, "parent": parent, "children": []}
@@ -111,7 +122,7 @@ def create_catalogue_marc21_record(
                 id_=draft.id,
                 data=data,
                 identity=identity,
-            )
+            ),
         )
 
     # publish drafts

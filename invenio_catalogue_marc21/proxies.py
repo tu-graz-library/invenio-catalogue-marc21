@@ -14,6 +14,6 @@ from flask import current_app
 from werkzeug.local import LocalProxy
 
 current_catalogue_marc21 = LocalProxy(
-    lambda: current_app.extensions["invenio-catalogue-marc21"]
+    lambda: current_app.extensions["invenio-catalogue-marc21"],
 )
 """Helper proxy to get the current records marc21 extension."""
