@@ -7,10 +7,10 @@
 // details.
 
 import React, { Component } from "react";
-import Overridable from "react-overridable";
 import { Card, Divider, Grid } from "semantic-ui-react";
 
-import { DeleteButton, PublishButton, SaveButton } from "@js/invenio_rdm_records";
+import { DeleteButton, SaveButton } from "@js/invenio_rdm_records";
+import { PublishButton } from "@js/invenio_rdm_records/src/deposit/controls/PublishButton/PublishButton";
 import {
   FilesAccess,
   MetadataAccess,
@@ -18,6 +18,7 @@ import {
 import { TemplateField } from "@js/invenio_records_marc21/components";
 import { i18next } from "@translations/invenio_catalogue_marc21/i18next";
 
+import { Expandable } from "./../../utils/expandable";
 //import { ImportFromAlma } from "./ImportFromAlma";
 import { UploadFiles } from "./UploadFiles";
 
@@ -37,7 +38,7 @@ export class ManageRecord extends Component {
           <Grid relaxed>
             <Grid.Column width={16}>
               <SaveButton fluid />
-              <PublishButton fluid />
+              <PublishButton fluid doiReservationCheck={() => false} />
 
               {permissions.can_delete_draft && (
                 <DeleteButton
@@ -76,13 +77,13 @@ export class ManageRecord extends Component {
 
               {/* {permissions.showImportFromAlma && <ImportFromAlma />} */}
 
-              <Overridable
+              <Expandable
                 id="InvenioCatalogueMarc21.Manage.Container"
                 record={record}
                 config={config}
               >
                 <></>
-              </Overridable>
+              </Expandable>
             </Grid.Column>
           </Grid>
         </Card.Content>

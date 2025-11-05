@@ -7,13 +7,13 @@
 // details.
 
 import React, { Component } from "react";
-import Overridable, { OverridableContext, overrideStore } from "react-overridable";
 import { Grid } from "semantic-ui-react";
 
 import { DepositFormApp, FormFeedback } from "@js/invenio_rdm_records";
 import { MetadataFields } from "@js/invenio_records_marc21/components";
 import { i18next } from "@translations/invenio_catalogue_marc21/i18next";
 
+import { ExpandableContext, expandableStore } from "./../utils/expandable";
 import { CatalogueTree, ManageRecord, Marc21CatalogueSerializer } from "./components";
 
 export class CatalogueDepositForm extends Component {
@@ -44,10 +44,10 @@ export class CatalogueDepositForm extends Component {
   render() {
     const { record, files, permissions, preselectedCommunity } = this.props;
     const allowRecordRestriction = true;
-    const overriddenComponents = overrideStore.getAll();
+    const expandableComponents = expandableStore.getAll();
 
     return (
-      <OverridableContext.Provider value={overriddenComponents}>
+      <ExpandableContext.Provider value={expandableComponents}>
         <DepositFormApp
           config={this.config}
           record={record}
@@ -92,7 +92,7 @@ export class CatalogueDepositForm extends Component {
             </Grid>
           </>
         </DepositFormApp>
-      </OverridableContext.Provider>
+      </ExpandableContext.Provider>
     );
   }
 }
