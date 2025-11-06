@@ -36,6 +36,14 @@ def empty_record() -> dict:
         "parent": "",
         "children": [],
     }
+    record["tree"] = {
+        "name": ["N/A"],
+        "node": "",
+        "self_html": "",
+        "root": "",
+        "parent": "",
+        "children": [],
+    }
     del record["pids"]
     del record["id"]
     return record
