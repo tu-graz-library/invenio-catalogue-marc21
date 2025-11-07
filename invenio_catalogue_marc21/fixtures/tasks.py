@@ -8,6 +8,7 @@
 
 """Marc21 catalogue fixture tasks."""
 
+from copy import deepcopy
 from pathlib import Path
 
 from celery import shared_task
@@ -70,8 +71,14 @@ def create_catalogue_marc21_record(
         identity = get_user_identity(user_id)
 
     service = current_catalogue_marc21.records_service
+    data_root = deepcopy(data)
+    data_root["catalogue"] = {
+        "root": "",
+        "parent": "",
+        "children": [],
+    }
     draft_root = service.create(
-        data=data,
+        data=data_root,
         identity=identity,
         access=access,
     )
@@ -83,6 +90,11 @@ def create_catalogue_marc21_record(
     # create chapters as draft to have the pid
     chapter_draft = []
     for chapter in data_chapters:
+        chapter["catalogue"] = {
+            "root": draft_root.id,
+            "parent": draft_root.id,
+            "children": [],
+        }
         draft_chapter = service.create(
             data=chapter,
             identity=identity,
@@ -103,6 +115,8 @@ def create_catalogue_marc21_record(
     drafts = []
 
     # update root draft
+    # to get the newest version of draft_root
+    draft_root = service.edit(identity, draft_root["id"])
     data = draft_root.data
     data["catalogue"] = catalogue
     drafts.append(
