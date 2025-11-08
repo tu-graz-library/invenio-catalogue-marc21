@@ -120,7 +120,7 @@ class CSVToMarc21:
         # record.add_datafield("540...", subfs={"f": short, "a": })
 
 
-def build_data_from_csv_row(row: dict) -> Marc21Metadata:
+def build_data_from_csv_row(row: dict) -> tuple[Marc21Metadata, str]:
     """Build data from csv row.
 
     columns: id,doi,filename,title,year,authors
@@ -152,8 +152,6 @@ def import_from_csv(pid: str) -> None:
                 zip_fp = file__.get_stream("rb")
                 archive = ZipFile(zip_fp)
 
-    children = []
-
     for metadata, filename in data_objs:
         temp_file = NamedTemporaryFile(  # noqa: SIM115
             delete_on_close=False,
@@ -174,21 +172,13 @@ def import_from_csv(pid: str) -> None:
             "children": [],
         }
 
-        draft = create_record(
+        create_record(
             service=records_service,
             data=data,
             file_paths=[temp_path],
             identity=system_identity,
             do_publish=False,  # True: should that really be true?
         )
-
-        children.append(draft.id)
-
-    parent_draft = records_service.read_draft(system_identity, id_=pid)
-    parent_data = parent_draft.data
-
-    parent_data["catalogue"]["children"] = children
-    records_service.update_draft(system_identity, id_=pid, data=parent_data)
 
 
 @shared_task

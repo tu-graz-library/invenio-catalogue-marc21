@@ -28,7 +28,11 @@ def update_parent(service: dict, record: Record, identity: Identity) -> None:
         return
 
     title = record.metadata["fields"]["245"][0]["subfields"]["a"]
-    authors = record.metadata["fields"]["100"][0]["subfields"]["a"]  # TODO
+    for category in ["100", "700"]:
+        try:
+            authors = record.metadata["fields"][category][0]["subfields"]["a"]  # TODO
+        except KeyError:
+            authors = ""
 
     parent_data["catalogue"]["children"].append(id_)
     parent_data["children"].append(
