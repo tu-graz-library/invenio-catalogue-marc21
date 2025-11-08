@@ -10,7 +10,6 @@
 
 from flask import current_app, render_template
 from flask_login import login_required
-from invenio_records_marc21.ui.theme.deposit import empty_record as base_empty_record
 from invenio_records_resources.services.files.results import FileItem
 from invenio_records_resources.services.records.results import RecordItem
 from invenio_stats.proxies import current_stats
@@ -30,22 +29,36 @@ from .deposit import deposit_config
 
 def empty_record() -> dict:
     """Create an empty record."""
-    record: dict = base_empty_record()
-    record["catalogue"] = {
-        "root": "",
-        "parent": "",
+    record = {
+        "id": "",
+        "links": {},
+        "metadata": {
+            "leader": "00000nam a2200000zca4500",
+            "fields": [],
+        },
+        "tree": {
+            "name": ["N/A"],
+            "node": "",
+            "self_html": "",
+            "root": "",
+            "parent": "",
+            "children": [],
+        },
+        "files": {
+            "enabled": True,
+        },
+        "access": {
+            "record": "public",
+            "files": "public",
+        },
+        "catalogue": {
+            "root": "",
+            "parent": "",
+            "children": [],
+        },
         "children": [],
     }
-    record["tree"] = {
-        "name": ["N/A"],
-        "node": "",
-        "self_html": "",
-        "root": "",
-        "parent": "",
-        "children": [],
-    }
-    del record["pids"]
-    del record["id"]
+
     return record
 
 
@@ -97,6 +110,7 @@ def deposit_create() -> str:
         "showUploadCSV": True,
     }
 
+    # needed that the expandable works!
     expand_javascript = current_app.config.get(
         "MARC21_CATALOGUE_JAVASCRIPT_EXTENDABLE",
         [],
@@ -104,12 +118,12 @@ def deposit_create() -> str:
 
     return render_template(
         "invenio_catalogue_marc21/deposit/index.html",
+        forms_config=deposit_config(),
         record=empty_record(),
         files={"default_preview": None, "entries": [], "links": {}},
-        # templates=deposit_templates(),
-        forms_config=deposit_config(),
         permissions=permissions,
         expand_javascript=expand_javascript,
+        # templates=deposit_templates(),
     )
 
 
@@ -140,6 +154,7 @@ def deposit_edit(
     permissions["showFileUploader"] = True
     permissions["showUploadCSV"] = True
 
+    # needed that the expandable works!
     expand_javascript = current_app.config.get(
         "MARC21_CATALOGUE_JAVASCRIPT_EXTENDABLE",
         [],

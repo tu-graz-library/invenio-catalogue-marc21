@@ -9,6 +9,7 @@
 import axios from "axios";
 import { hierarchy, tree } from "d3-hierarchy";
 import { linkHorizontal } from "d3-shape";
+import PropTypes from "prop-types";
 import React, { Component, createRef } from "react";
 import { connect } from "react-redux";
 
@@ -200,6 +201,11 @@ class TreeCmp extends Component {
     );
   }
 }
+
+TreeCmp.propTypes = {
+  data: PropTypes.object.isRequired,
+  saveAction: PropTypes.func.isRequired,
+};
 
 function save(data) {
   // maybe not necessary that complicated but it does work like that

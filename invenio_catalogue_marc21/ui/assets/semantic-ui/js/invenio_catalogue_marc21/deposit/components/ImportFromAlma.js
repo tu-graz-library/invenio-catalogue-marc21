@@ -7,6 +7,7 @@
 // details.
 
 import axios from "axios";
+import PropTypes from "prop-types";
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import {
@@ -67,17 +68,6 @@ class ImportFromAlmaCmp extends PureComponent {
       const url = `/api/catalogue/alma/${type}/${value}`;
       const response = await axiosWithConfig.get(url);
       data = response.data;
-      // data = {
-      //   metadata: {
-      //     fields: [],
-      //     leader: "fasr"
-      //   },
-      //   catalogue: {
-      //     root: "",
-      //     parent: "",
-      //     children: []
-      //   }
-      // }
     } catch (error) {
       console.log("CreateNode error: ", error);
     }
@@ -120,6 +110,10 @@ class ImportFromAlmaCmp extends PureComponent {
     );
   }
 }
+
+ImportFromAlmaCmp.propTypes = {
+  saveAction: PropTypes.func.isRequired,
+};
 
 function save(data) {
   // maybe not necessary that complicated but it does work like that

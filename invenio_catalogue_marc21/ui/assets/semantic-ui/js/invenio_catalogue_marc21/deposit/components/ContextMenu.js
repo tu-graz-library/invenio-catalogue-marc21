@@ -6,7 +6,8 @@
 // modify it under the terms of the MIT License; see LICENSE file for more
 // details.
 
-import { PureComponent } from "react";
+import PropTypes from "prop-types";
+import React, { PureComponent } from "react";
 import { Menu, Popup } from "semantic-ui-react";
 
 export class ContextMenu extends PureComponent {
@@ -52,3 +53,11 @@ export class ContextMenu extends PureComponent {
     );
   }
 }
+
+ContextMenu.propTypes = {
+  visible: PropTypes.bool.isRequired,
+  x: PropTypes.number.isRequired,
+  y: PropTypes.number.isRequired,
+  onAction: PropTypes.func.isRequired,
+  node: PropTypes.object.isRequired,
+};

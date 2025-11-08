@@ -6,6 +6,8 @@
 // modify it under the terms of the MIT License; see LICENSE file for more
 // details.
 
+import PropTypes from "prop-types";
+
 export const CatalogueTreeItem = ({ nodeData = {}, nodeToggle }) => {
   return (
     <g>
@@ -19,3 +21,8 @@ export const CatalogueTreeItem = ({ nodeData = {}, nodeToggle }) => {
 export const renderCustomNode = ({ nodeDatum, toggleNode }) => (
   <CatalogueTreeItem nodeData={nodeDatum} triggerNodeToggle={toggleNode} />
 );
+
+CatalogueTreeItem.propTypes = {
+  nodeData: PropTypes.object.isRequired,
+  nodeToggle: PropTypes.func.isRequired,
+};

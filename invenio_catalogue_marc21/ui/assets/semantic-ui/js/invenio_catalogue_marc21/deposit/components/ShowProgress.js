@@ -6,6 +6,7 @@
 // modify it under the terms of the MIT License; see LICENSE file for more
 // details.
 
+import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { Header, Icon, List, Message } from "semantic-ui-react";
 
@@ -119,3 +120,8 @@ export class ShowProgress extends Component {
     );
   }
 }
+
+ShowProgress.propTypes = {
+  recid: PropTypes.string.isRequired,
+  pollingInterval: PropTypes.number.isRequired,
+};
