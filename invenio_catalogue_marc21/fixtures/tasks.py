@@ -88,7 +88,7 @@ def create_catalogue_marc21_record(
         add_file_to_record(service.draft_files, draft_root.id, file_path, identity)
 
     # create chapters as draft to have the pid
-    chapter_draft = []
+    drafts = [draft_root]
     for chapter in data_chapters:
         chapter["catalogue"] = {
             "root": draft_root.id,
@@ -103,41 +103,7 @@ def create_catalogue_marc21_record(
 
         file_path = create_fake_file()
         add_file_to_record(service.draft_files, draft_chapter.id, file_path, identity)
-        chapter_draft.append(draft_chapter)
-
-    # extract root parent and the child list
-    root = draft_root.id
-    parent = root
-    children = [chapter.id for chapter in chapter_draft]
-    catalogue = {"root": "", "parent": "", "children": children}
-
-    # update draft
-    drafts = []
-
-    # update root draft
-    # to get the newest version of draft_root
-    draft_root = service.edit(identity, draft_root["id"])
-    data = draft_root.data
-    data["catalogue"] = catalogue
-    drafts.append(
-        service.update_draft(
-            id_=draft_root.id,
-            data=data,
-            identity=identity,
-        ),
-    )
-
-    catalogue = {"root": root, "parent": parent, "children": []}
-    for draft in chapter_draft:
-        data = draft.data
-        data["catalogue"] = catalogue
-        drafts.append(
-            service.update_draft(
-                id_=draft.id,
-                data=data,
-                identity=identity,
-            ),
-        )
+        drafts.append(draft_chapter)
 
     # publish drafts
     for draft in drafts:
