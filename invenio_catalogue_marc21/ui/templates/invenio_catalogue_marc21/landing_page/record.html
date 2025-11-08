@@ -41,10 +41,15 @@
 
       {# Right Sidebar #}
       <div class="four wide computer sixteen wide tablet column">
-        {#
-          {%- include "invenio_catalogue_marc21/landing_page/helpers/links.html" %}
-        #}
-        {%- include "invenio_catalogue_marc21/landing_page/helpers/chapters.html" %}
+        {% if root["pid"] %}
+          {% if root["pid"] != parent["pid"] %}
+            {%- include "invenio_catalogue_marc21/landing_page/helpers/root.html" %}
+          {% endif %}
+          {%- include "invenio_catalogue_marc21/landing_page/helpers/parent.html" %}
+        {% endif %}
+        {% if children %}
+          {%- include "invenio_catalogue_marc21/landing_page/helpers/chapters.html" %}
+        {% endif %}
       </div>
     </div>
 

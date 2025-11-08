@@ -8,12 +8,14 @@
 
 """Invenio module link multiple marc21 modules."""
 
-from flask import current_app, render_template
+from flask import current_app, g, render_template
 from flask_login import login_required
 from invenio_records_resources.services.files.results import FileItem
+from invenio_records_resources.services.records import RecordService
 from invenio_records_resources.services.records.results import RecordItem
 from invenio_stats.proxies import current_stats
 
+from ..proxies import current_catalogue_marc21
 from ..resources.serializers import (
     Marc21CatalogueDepositSerializer,
     Marc21CatalogueUIJSONSerializer,
@@ -25,6 +27,11 @@ from .decorators import (
     pass_record_or_draft,
 )
 from .deposit import deposit_config
+
+
+def _service() -> RecordService:
+    """Get the record service."""
+    return current_catalogue_marc21.records_service
 
 
 def empty_record() -> dict:
@@ -62,6 +69,27 @@ def empty_record() -> dict:
     return record
 
 
+def calculate_root(pid: str) -> dict:
+    """Calculate root."""
+    if pid == "":
+        title = ""
+    else:
+        root = _service().read(g.identity, pid)
+        title = root._record.metadata["fields"]["245"][0]["subfields"]["a"][0]
+
+    return {"pid": pid, "title": title}
+
+
+def calculate_parent(pid: str) -> dict:
+    """Calculate parent."""
+    if pid == "":
+        title = ""
+    else:
+        parent = _service().read(g.identity, pid)
+        title = parent._record.metadata["fields"]["245"][0]["subfields"]["a"][0]
+    return {"pid": pid, "title": title}
+
+
 @pass_record_or_draft
 @pass_record_files
 def record_detail(
@@ -78,6 +106,9 @@ def record_detail(
     if record is not None and emitter is not None:
         emitter(current_app, record=record._record, via_api=False)
 
+    root = calculate_root(record._record.catalogue["root"])
+    parent = calculate_parent(record._record.catalogue["parent"])
+
     children = record._record.children
     serializer = Marc21CatalogueUIJSONSerializer()
     record_ui = serializer.dump_obj(record.to_dict())
@@ -92,6 +123,8 @@ def record_detail(
             ["edit", "new_version", "manage", "update_draft", "read_files"],
         ),
         children=children,
+        parent=parent,
+        root=root,
         is_preview=is_preview,
         is_draft=record._record.is_draft,
     )
