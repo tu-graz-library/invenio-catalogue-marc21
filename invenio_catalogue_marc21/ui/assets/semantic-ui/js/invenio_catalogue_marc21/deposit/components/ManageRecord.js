@@ -6,6 +6,7 @@
 // modify it under the terms of the MIT License; see LICENSE file for more
 // details.
 
+import PropTypes from "prop-types";
 import React, { Component } from "react";
 import { Card, Divider, Grid } from "semantic-ui-react";
 
@@ -19,7 +20,6 @@ import { TemplateField } from "@js/invenio_records_marc21/components";
 import { i18next } from "@translations/invenio_catalogue_marc21/i18next";
 
 import { Expandable } from "./../../utils/expandable";
-//import { ImportFromAlma } from "./ImportFromAlma";
 import { UploadFiles } from "./UploadFiles";
 
 export class ManageRecord extends Component {
@@ -75,15 +75,11 @@ export class ManageRecord extends Component {
                 <UploadFiles record={record} config={config} />
               )}
 
-              {/* {permissions.showImportFromAlma && <ImportFromAlma />} */}
-
               <Expandable
                 id="InvenioCatalogueMarc21.Manage.Container"
                 record={record}
                 config={config}
-              >
-                <></>
-              </Expandable>
+              />
             </Grid.Column>
           </Grid>
         </Card.Content>
@@ -91,3 +87,10 @@ export class ManageRecord extends Component {
     );
   }
 }
+
+ManageRecord.propTypes = {
+  record: PropTypes.object.isRequired,
+  permissions: PropTypes.object.isRequired,
+  templates: PropTypes.object.isRequired,
+  config: PropTypes.object.isRequired,
+};

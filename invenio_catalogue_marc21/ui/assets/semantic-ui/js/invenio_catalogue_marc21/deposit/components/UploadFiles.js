@@ -6,6 +6,7 @@
 // modify it under the terms of the MIT License; see LICENSE file for more
 // details.
 
+import PropTypes from "prop-types";
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import {
@@ -89,6 +90,11 @@ class UploadFilesCmp extends PureComponent {
     );
   }
 }
+
+UploadFilesCmp.propTypes = {
+  record: PropTypes.object.isRequired,
+  config: PropTypes.object.isRequired,
+};
 
 const mapStateToProps = null;
 

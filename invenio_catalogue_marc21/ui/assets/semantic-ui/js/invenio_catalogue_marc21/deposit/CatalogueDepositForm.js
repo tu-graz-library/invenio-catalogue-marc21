@@ -45,6 +45,7 @@ export class CatalogueDepositForm extends Component {
     const { record, files, permissions, preselectedCommunity } = this.props;
     const allowRecordRestriction = true;
     const expandableComponents = expandableStore.getAll();
+    const sectionsConfig = {};
 
     return (
       <ExpandableContext.Provider value={expandableComponents}>
@@ -56,7 +57,7 @@ export class CatalogueDepositForm extends Component {
           permissions={permissions}
           recordSerializer={this.recordSerializer}
         >
-          <FormFeedback fieldPath="message" />
+          <FormFeedback fieldPath="message" sectionsConfig={sectionsConfig} />
           <>
             {this.noFiles && record.is_published && (
               <div className="text-align-center pb-10">
