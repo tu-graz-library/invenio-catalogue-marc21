@@ -13,60 +13,42 @@
 {%- set metadata = record_ui["ui"]["metadata"] %}
 
 {% block head_title %}
-  <title>
-    {{ metadata.get("title_statement", {}).get("title", "") }}
-  </title>
+<title>
+  {{ metadata.title }}
+</title>
 {% endblock head_title %}
 
-{%- block page_body %}
-  <div class="ui container" id="marc21-catalogue-landing-page">
-    <div class="ui relaxed grid">
-      {# Landing Page Header #}
+{%- block head_meta %}
+  {# to not run this block #}
+{%- endblock head_meta %}
 
-      <div class="row">
-        {%- include "invenio_catalogue_marc21/landing_page/helpers/header.html" %}
-      </div>
-
-      {# Main Content #}
-      <div class="row">
-        <div class="twelve wide computer sixteen wide tablet column center aligned">
-          {%- include "invenio_catalogue_marc21/landing_page/helpers/title.html" %}
-        </div>
-      </div>
-
-      <div class="twelve wide computer sixteen wide tablet column">
-        {%- include "invenio_catalogue_marc21/landing_page/helpers/metadata.html" %}
-        {%- include "invenio_records_marc21/landing_page/helpers/files.html" %}
-      </div>
-
-      {# Right Sidebar #}
-      <div class="four wide computer sixteen wide tablet column">
-        {% if root["pid"] %}
-          {% if root["pid"] != parent["pid"] %}
-            {%- include "invenio_catalogue_marc21/landing_page/helpers/root.html" %}
-          {% endif %}
-          {%- include "invenio_catalogue_marc21/landing_page/helpers/parent.html" %}
-        {% endif %}
-        {% if children %}
-          {%- include "invenio_catalogue_marc21/landing_page/helpers/chapters.html" %}
-        {% endif %}
-      </div>
-    </div>
-
-
-    <div class="ui divider hidden"></div>
-
-    <div class="centered" id="jump-btn">
-      <a style="cursor: pointer;" href="#">
-        <span class="ui button">
-          <i class="arrow alternate circle up outline icon"></i>
-          {{_("Jump up")}}
-        </span>
-      </a>
-    </div>
+{%- block record_files -%}
+  <div style="margin-top: 40px;">
+    {%- include "invenio_records_marc21/landing_page/helpers/files.html" %}
   </div>
-{%- endblock page_body %}
+{%- endblock record_files -%}
+
+{% block record_sidebar %}
+  {%- include "invenio_app_rdm/records/details/side_bar/metrics.html" %}
+
+  <div class="four wide computer sixteen wide tablet column">
+    {% if root["pid"] %}
+      {% if root["pid"] != parent["pid"] %}
+        {%- include "invenio_catalogue_marc21/landing_page/helpers/root.html" %}
+      {% endif %}
+      {%- include "invenio_catalogue_marc21/landing_page/helpers/parent.html" %}
+    {% endif %}
+    {% if children %}
+      {%- include "invenio_catalogue_marc21/landing_page/helpers/chapters.html" %}
+    {% endif %}
+  </div>
+</div>
+{% endblock record_sidebar %}
 
 {%- block javascript %}
   {{ super() }}
 {%- endblock javascript %}
+
+{%- block record_jsonld %}
+  {# to not run this block #}
+{%- endblock record_jsonld %}

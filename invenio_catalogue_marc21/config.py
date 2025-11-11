@@ -8,7 +8,7 @@
 
 """Invenio module link multiple marc21 modules."""
 
-MARC21_CATALOGUE_BASE_TEMPLATE = "invenio_catalogue_marc21/base.html"
+MARC21_CATALOGUE_BASE_TEMPLATE = "invenio_app_rdm/records/detail.html"
 """Default base template for the demo page."""
 
 

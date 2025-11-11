@@ -35,6 +35,46 @@ def field_subfield(key: str, subfields: dict) -> str:
     return subfield if subfield else ""
 
 
+def make_affiliation_index(
+    main_entry_personal_name: list,
+    added_entry_personal_name: list,
+) -> dict:
+    """Make affiliation index."""
+    creators = []
+    affiliation_list = []
+
+    affiliation_idx = {}
+    index = {"val": 1}
+
+    def _apply_idx(entry: dict) -> tuple[int, str]:
+        name = field_subfield("4", entry)
+        if name not in affiliation_idx:
+            affiliation_idx[name] = index["val"]
+            affiliation_list.append([index["val"], name])
+            index["val"] += 1
+        idx = affiliation_idx[name]
+        return (idx, name)
+
+    def _creator(entry: dict) -> dict:
+        return {
+            "person_or_org": {
+                "type": "personal",
+                "name": field_subfield("a", entry),
+            },
+            "affiliations": list(map(_apply_idx, [entry])),
+        }
+
+    creators = [
+        _creator(entry)
+        for entry in [*main_entry_personal_name, *added_entry_personal_name]
+    ]
+
+    return {
+        "creators": creators,
+        "affiliations": affiliation_list,
+    }
+
+
 class MetadataUIField(Field):
     """Schema for the record metadata."""
 
@@ -67,5 +107,11 @@ class MetadataUIField(Field):
                 "title": field_subfield("a", title_statement[0]),
                 "additional_title": field_subfield("b", title_statement[0]),
             }
+            out["title"] = field_subfield("a", title_statement[0])
+
+        out["creators"] = make_affiliation_index(
+            main_entry_personal_name,
+            added_entry_personal_name,
+        )
 
         return out
