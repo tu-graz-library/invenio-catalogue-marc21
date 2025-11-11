@@ -90,13 +90,14 @@ def create_catalogue_marc21_record(
     # create chapters as draft to have the pid
     drafts = [draft_root]
     for chapter in data_chapters:
-        chapter["catalogue"] = {
+        c = deepcopy(chapter)
+        c["catalogue"] = {
             "root": draft_root.id,
             "parent": draft_root.id,
             "children": [],
         }
         draft_chapter = service.create(
-            data=chapter,
+            data=c,
             identity=identity,
             access=access,
         )
@@ -104,6 +105,28 @@ def create_catalogue_marc21_record(
         file_path = create_fake_file()
         add_file_to_record(service.draft_files, draft_chapter.id, file_path, identity)
         drafts.append(draft_chapter)
+
+        for chapter_ in data_chapters:
+            c = deepcopy(chapter_)
+            c["catalogue"] = {
+                "root": draft_root.id,
+                "parent": draft_chapter.id,
+                "children": [],
+            }
+            draft_chapter_ = service.create(
+                data=c,
+                identity=identity,
+                access=access,
+            )
+
+            file_path = create_fake_file()
+            add_file_to_record(
+                service.draft_files,
+                draft_chapter_.id,
+                file_path,
+                identity,
+            )
+            drafts.append(draft_chapter_)
 
     # publish drafts
     for draft in drafts:
