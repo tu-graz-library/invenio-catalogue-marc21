@@ -113,6 +113,13 @@ def record_detail(
     serializer = Marc21CatalogueUIJSONSerializer()
     record_ui = serializer.dump_obj(record.to_dict())
 
+    # ATTENTION:
+    # this one is a quick and dirty fix
+    # it should be done in the schema somehow, but since in my point of view
+    # rdm-records makes it more complicated as necessary i will leave it like
+    # that for the moment
+    record_ui["metadata"] = record_ui["ui"]["metadata"]
+
     return render_template(
         "invenio_catalogue_marc21/landing_page/record.html",
         record=record,
