@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024-2025 Graz University of Technology.
+# Copyright (C) 2024-2026 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -8,6 +8,7 @@
 
 """Invenio module link multiple marc21 modules."""
 
+from flask import current_app
 from flask_principal import Identity
 from invenio_records_marc21.services import Marc21RecordService
 from invenio_records_resources.services.base import Service
@@ -66,9 +67,14 @@ class Marc21CatalogueTasksService(Service):
         """Start."""
         # TODO:
         # not every identity should be able to do every task
+
         match task:
             case "import":
-                import_task.delay(pid, params)
+                mapper_cls = current_app.config["MARC21_CATALOGUE_IMPORT_CLS_TYPES"][
+                    # TODO: check why [0] is necessary, route definition wrong?
+                    params["mapper_cls_type"][0]
+                ]
+                import_task.delay(pid, mapper_cls, params)
         # TODO:
         # check if there is a use case to return anything more useful as an empty dict
         return T()

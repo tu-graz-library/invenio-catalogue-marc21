@@ -1,6 +1,6 @@
 // This file is part of Invenio.
 //
-// Copyright (C) 2024-2025 Graz University of Technology.
+// Copyright (C) 2024-2026 Graz University of Technology.
 //
 // Invenio-Catalogue-Marc21 is free software; you can redistribute it and/or
 // modify it under the terms of the MIT License; see LICENSE file for more
@@ -20,6 +20,7 @@ import { TemplateField } from "@js/invenio_records_marc21/components";
 import { i18next } from "@translations/invenio_catalogue_marc21/i18next";
 
 import { Expandable } from "./../../utils/expandable";
+import { UploadCSV } from "./UploadCSV";
 import { UploadFiles } from "./UploadFiles";
 
 export class ManageRecord extends Component {
@@ -73,6 +74,10 @@ export class ManageRecord extends Component {
 
               {permissions.showFileUploader && (
                 <UploadFiles record={record} config={config} />
+              )}
+
+              {permissions.showUploadCSV && (
+                <UploadCSV record={record} config={config} />
               )}
 
               <Expandable
