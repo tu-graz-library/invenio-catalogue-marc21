@@ -2,7 +2,7 @@
 #
 # This file is part of Invenio.
 #
-# Copyright (C) 2024-2025 Graz University of Technology.
+# Copyright (C) 2024-2026 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -11,11 +11,10 @@
 """Marc21 Record Service links."""
 
 from invenio_drafts_resources.services.records.config import is_draft, is_record
-from invenio_rdm_records.services.config import has_doi, is_record_and_has_doi
+from invenio_records_marc21.services.links import record_doi_link
 from invenio_records_resources.records import Record
 from invenio_records_resources.services import ConditionalLink
-from invenio_records_resources.services.base.links import Link
-from invenio_records_resources.services.records.links import RecordLink
+from invenio_records_resources.services.records.links import RecordEndpointLink
 
 
 class SwitchLinks:
@@ -60,16 +59,22 @@ DefaultServiceLinks = {
                 is_catalogue,
                 ConditionalLink(
                     cond=is_record,
-                    if_=RecordLink("{+api}/catalogue/{id}"),
-                    else_=RecordLink("{+api}/catalogue/{id}/draft"),
+                    if_=RecordEndpointLink(
+                        "marc21_catalogue_records.read",
+                        params=["pid_value", "key"],
+                    ),
+                    else_=RecordEndpointLink(
+                        "marc21_catalogue_records.read_draft",
+                        params=["pid_value", "key"],
+                    ),
                 ),
             ),
             (
                 is_base_marc21_record,
                 ConditionalLink(
                     cond=is_record,
-                    if_=RecordLink("{+api}/publications/{id}"),
-                    else_=RecordLink("{+api}/publications/{id}/draft"),
+                    if_=RecordEndpointLink("marc21_records.read"),
+                    else_=RecordEndpointLink("marc21_records.read_draft"),
                 ),
             ),
         ],
@@ -80,78 +85,42 @@ DefaultServiceLinks = {
                 is_catalogue,
                 ConditionalLink(
                     cond=is_record,
-                    if_=RecordLink("{+ui}/catalogue/{id}"),
-                    else_=RecordLink("{+ui}/catalogue/uploads/{id}"),
+                    if_=RecordEndpointLink("invenio_catalogue_marc21.record_detail"),
+                    else_=RecordEndpointLink("invenio_catalogue_marc21.deposit_edit"),
                 ),
             ),
             (
                 is_base_marc21_record,
                 ConditionalLink(
                     cond=is_record,
-                    if_=RecordLink("{+ui}/publications/{id}"),
-                    else_=RecordLink("{+ui}/publications/uploads/{id}"),
+                    if_=RecordEndpointLink("invenio_records_marc21.record_detail"),
+                    else_=RecordEndpointLink("invenio_records_marc21.deposit_edit"),
                 ),
             ),
         ],
     ),
-    "self_doi": Link(
-        "{+ui}/publications/{+pid_doi}",
-        when=is_record_and_has_doi,
-        vars=lambda record, vars_: vars_.update(
-            {
-                f"pid_{scheme}": pid["identifier"].split("/")[-1]
-                for (scheme, pid) in record.pids.items()
-            },
-        ),
-    ),
-    "doi": Link(
-        "https://doi.org/{+pid_doi}",
-        when=has_doi,
-        vars=lambda record, vars_: vars_.update(
-            {
-                f"pid_{scheme}": pid["identifier"]
-                for (scheme, pid) in record.pids.items()
-            },
-        ),
-    ),
+    "self_doi": record_doi_link,
+    "doi": record_doi_link,
     "files": ConditionalLink(
         cond=is_record,
-        if_=RecordLink("{+api}/publications/{id}/files"),
-        else_=RecordLink("{+api}/publications/{id}/draft/files"),
-    ),
-    "latest": SwitchLinks(
-        cond=[
-            (
-                is_catalogue,
-                RecordLink("{+ui}/catalogue/{id}/versions/latest"),
-            ),
-            (
-                is_base_marc21_record,
-                RecordLink("{+ui}/publications/{id}/versions/latest"),
-            ),
-        ],
-    ),
-    "latest_html": SwitchLinks(
-        cond=[
-            (
-                is_catalogue,
-                RecordLink("{+ui}/catalogue/{id}/latest"),
-            ),
-            (
-                is_base_marc21_record,
-                RecordLink("{+ui}/publications/{id}/latest"),
-            ),
-        ],
+        if_=RecordEndpointLink("marc21_record_files.search"),
+        else_=RecordEndpointLink("marc21_draft_files.search"),
     ),
     "draft": SwitchLinks(
         cond=[
             (
                 is_catalogue,
-                RecordLink("{+ui}/catalogue/uploads/{id}", when=is_record),
+                RecordEndpointLink(
+                    "invenio_catalogue_marc21.deposit_edit",
+                    when=is_record,
+                ),
             ),
             (
                 is_base_marc21_record,
-                RecordLink("{+ui}/publications/uploads/{id}", when=is_record),
+                RecordEndpointLink(
+                    "invenio_records_marc21.deposit_edit",
+                    when=is_record,
+                ),
             ),
         ],
     ),
@@ -159,11 +128,11 @@ DefaultServiceLinks = {
         cond=[
             (
                 is_catalogue,
-                RecordLink("{+api}/catalogue/{id}/draft"),
+                RecordEndpointLink("marc21_catalogue_records.edit"),
             ),
             (
                 is_base_marc21_record,
-                RecordLink("{+api}/publications/{id}/draft"),
+                RecordEndpointLink("marc21_records.edit"),
             ),
         ],
     ),
@@ -171,17 +140,11 @@ DefaultServiceLinks = {
         cond=[
             (
                 is_catalogue,
-                RecordLink(
-                    "{+api}/catalogue/{id}/draft/actions/publish",
-                    when=is_draft,
-                ),
+                RecordEndpointLink("marc21_catalogue_records.publish", when=is_draft),
             ),
             (
                 is_base_marc21_record,
-                RecordLink(
-                    "{+api}/publications/{id}/draft/actions/publish",
-                    when=is_draft,
-                ),
+                RecordEndpointLink("marc21_records.publish", when=is_draft),
             ),
         ],
     ),
@@ -189,9 +152,8 @@ DefaultServiceLinks = {
         cond=[
             (
                 is_catalogue,
-                RecordLink("{+api}/catalogue/{id}/catalogue"),
+                RecordEndpointLink("marc21_catalogue.catalogue", params=["pid_value"]),
             ),
         ],
     ),
-    "versions": RecordLink("{+api}/publications/{id}/versions"),
 }

@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024-2025 Graz University of Technology.
+# Copyright (C) 2024-2026 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
 # details.
 
 """Catalogue service component for ."""
-
 
 from flask import g
 from flask_resources import resource_requestctx, response_handler, route
@@ -194,6 +193,7 @@ class Marc21CatalogueRecordResource(RecordResource):
             route("DELETE", p(routes["item"]), self.delete),
             route("POST", p(routes["item-draft"]), self.edit),
             route("PUT", p(routes["item-draft"]), self.update_draft),
+            route("GET", p(routes["item-draft"]), self.read_draft),
             route("DELETE", p(routes["item-draft"]), self.delete_draft),
             route("POST", p(routes["item-publish"]), self.publish),
         ]
