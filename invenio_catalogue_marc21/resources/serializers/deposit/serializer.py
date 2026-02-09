@@ -8,7 +8,6 @@
 
 """Marc21 UI record response serializers."""
 
-
 from flask_resources import BaseListSchema, JSONSerializer, MarshmallowSerializer
 
 from .schema import Marc21CatalogueDepositSchema

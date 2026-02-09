@@ -8,7 +8,6 @@
 
 """Catalogue service component for ."""
 
-
 from flask_resources import RequestBodyParser, ResponseHandler
 from flask_resources.parsers import MultiDictSchema
 from flask_resources.serializers import JSONSerializer

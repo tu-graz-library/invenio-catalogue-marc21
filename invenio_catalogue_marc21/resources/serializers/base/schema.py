@@ -9,7 +9,6 @@
 # details.
 """Schemas for marc21 records serializers."""
 
-
 from marshmallow import Schema
 from marshmallow.fields import List, String
 

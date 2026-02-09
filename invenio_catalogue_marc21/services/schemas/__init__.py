@@ -8,7 +8,6 @@
 
 """Invenio module link multiple marc21 modules."""
 
-
 from .catalogue import CatalogueSchema, Marc21CatalogueSchema
 
 __all__ = (

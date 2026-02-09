@@ -8,7 +8,6 @@
 
 """Invenio Marc21 module service record fields modules."""
 
-
 from .catalogue_check import CatalogueCheckField
 
 __all__ = ("CatalogueCheckField",)
