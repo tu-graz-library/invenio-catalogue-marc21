@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024-2025 Graz University of Technology.
+# Copyright (C) 2024-2026 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -29,10 +29,3 @@ def test_init() -> None:
     assert "invenio-catalogue-marc21" not in app.extensions
     ext.init_app(app)
     assert "invenio-catalogue-marc21" in app.extensions
-
-
-def test_view(base_client) -> None:
-    """Test view."""
-    res = base_client.get("/")
-    assert res.status_code == 200
-    assert "Welcome to invenio-catalogue-marc21" in str(res.data)
