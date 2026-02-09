@@ -8,7 +8,6 @@
 
 """Catalogue service component for ."""
 
-
 from .config import (
     Marc21CatalogueAlmaProxyResourceConfig,
     Marc21CatalogueRecordResourceConfig,

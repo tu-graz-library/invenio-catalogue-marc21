@@ -8,7 +8,6 @@
 
 """Invenio module link multiple marc21 modules."""
 
-
 from invenio_records_marc21.services.schemas import Marc21RecordSchema
 from marshmallow import Schema
 from marshmallow.fields import Dict, List, Str

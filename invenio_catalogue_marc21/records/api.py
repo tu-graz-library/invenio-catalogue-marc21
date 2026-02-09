@@ -9,7 +9,6 @@
 
 """Marc21 Catalogue Api."""
 
-
 from invenio_records.api import Record
 from invenio_records.systemfields import ConstantField, DictField
 from invenio_records_marc21.records import Marc21Draft, Marc21Record
