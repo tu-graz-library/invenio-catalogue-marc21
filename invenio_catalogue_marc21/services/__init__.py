@@ -8,7 +8,6 @@
 
 """Invenio module link multiple marc21 modules."""
 
-
 from .config import Marc21CatalogueServiceConfig, Marc21CatalogueTasksServiceConfig
 from .services import Marc21CatalogueService, Marc21CatalogueTasksService
 
