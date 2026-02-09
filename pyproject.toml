@@ -44,11 +44,11 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "invenio-app>=3.0.0,<4.0.0",
+    "invenio-previewer>=4.0.0,<5.0.0",
     "mypy>=1.16.0",
     "pytest-invenio>=4.0.0,<5.0.0",
     "pytest-black>=0.6.0",
     "ruff>=0.11",
-    "sphinx>=8.0.0",
 ]
 
 # Entrypoints
@@ -93,9 +93,13 @@ path = "invenio_catalogue_marc21/__init__.py"
 
 [tool.hatch.build]
 exclude = [
-  "run-tests.sh",
-  "docs/**",
+  ".github/**",
+  ".tx/config",
   "tests/**",
+  ".editorconfig",
+  ".gitignore",
+  "eslint.config.js",
+  "run-tests.sh",
 ]
 
 [tool.isort]
