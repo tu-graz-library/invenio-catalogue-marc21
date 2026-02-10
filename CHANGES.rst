@@ -1,5 +1,5 @@
 ..
-    Copyright (C) 2024-2025 Graz University of Technology.
+    Copyright (C) 2024-2026 Graz University of Technology.
 
     invenio-catalogue-marc21 is free software; you can redistribute it
     and/or modify it under the terms of the MIT License; see LICENSE file for
@@ -7,6 +7,26 @@
 
 Changes
 =======
+
+Version v0.1.0 (released 2026-02-10)
+
+- chore(black): update formatting to >= 26.0
+- chore: clean up
+- chore: update to newest python version
+- fix: github tests wrong branch name
+- chore(fix): not applied change to test
+- chore(setup): bump dependencies
+- fix: deprecation warning for links
+- refactor(csv): reorganize import feature
+- fixtures(demo): add additional level
+- ui: base landing page on app-rdm
+- fix: remove unnecessary code
+- ui: landing page root
+- wip
+- fix: demo tasks
+- fix: empty record
+- feat: create Expandable
+- chore: refactor
 
 Version v0.0.4 (released 2025-07-29)
 
