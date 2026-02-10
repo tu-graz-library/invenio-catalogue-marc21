@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2024-2025 Graz University of Technology.
+# Copyright (C) 2024-2026 Graz University of Technology.
 #
 # invenio-catalogue-marc21 is free software; you can redistribute it and/or
 # modify it under the terms of the MIT License; see LICENSE file for more
@@ -35,7 +35,7 @@ dependencies = [
     "invenio-base>=2.0.0,<3.0.0",
     "invenio-i18n>=3.0.0,<4.0.0",
     "invenio-search[opensearch2]>=3.0.0,<4.0.0",
-    "invenio-records-marc21>=0.20.0,<1.0.0",
+    "invenio-records-marc21>=0.28.0,<1.0.0",
     "faker>=9.0.0",
     "faker-file[pdf]>0.17.0",
     "reportlab>=4.0.0",
@@ -43,9 +43,9 @@ dependencies = [
 
 [project.optional-dependencies]
 tests = [
-    "invenio-app>=2.0.0,<3.0.0",
+    "invenio-app>=3.0.0,<4.0.0",
     "mypy>=1.16.0",
-    "pytest-invenio>=3.0.0,<4.0.0",
+    "pytest-invenio>=4.0.0,<5.0.0",
     "pytest-black>=0.6.0",
     "ruff>=0.11",
     "sphinx>=8.0.0",
