@@ -8,6 +8,11 @@
 Changes
 =======
 
+Version v0.2.0 (released 2026-02-10)
+
+- problem with v0.1.0 release, files existing already
+
+
 Version v0.1.0 (released 2026-02-10)
 
 - chore(black): update formatting to >= 26.0
