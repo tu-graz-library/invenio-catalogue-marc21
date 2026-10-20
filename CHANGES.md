@@ -5,6 +5,19 @@ SPDX-License-Identifier: MIT
 
 # Changes
 
+## Version v0.3.0 (released 2026-10-20)
+
+- fix(setup): build step was missing
+- refactor(demo): remove unnecessary code
+- chore(setup): reformat with tombi
+- chore: remove unused files
+- chore: migrate to markdown files
+- chore(licenses): update license headers to use SPDX
+- chore(type): add as much as possible types
+- chore(linter): apply djlint
+- chore(setup): relax dependency ranges
+- fix(ui): remove additional title
+
 ## Version v0.2.0 (released 2026-02-10)
 
 - problem with v0.1.0 release, files existing already
