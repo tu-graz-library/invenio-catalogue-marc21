@@ -5,6 +5,10 @@ SPDX-License-Identifier: MIT
 
 # Changes
 
+## Version v0.3.1 (released 2026-10-24)
+
+- fix: add back class export
+
 ## Version v0.3.0 (released 2026-10-20)
 
 - fix(setup): build step was missing
