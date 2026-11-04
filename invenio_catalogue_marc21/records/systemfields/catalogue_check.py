@@ -61,20 +61,20 @@ class CatalogueCheckField(SystemField):
     def __get__(
         self,
         record: None,
-        owner: type[Marc21CatalogueRecord | Marc21CatalogueDraft] | None = None,
+        owner=None,  # : type[Marc21CatalogueRecord | Marc21CatalogueDraft] | None = None,
     ) -> Self: ...
 
     @overload
     def __get__(
         self,
-        record: Marc21CatalogueRecord | Marc21CatalogueDraft,
-        owner: type[Marc21CatalogueRecord | Marc21CatalogueDraft] | None = None,
+        record,  # : Marc21CatalogueRecord | Marc21CatalogueDraft,
+        owner=None,  # : type[Marc21CatalogueRecord | Marc21CatalogueDraft] | None = None,
     ) -> bool: ...
 
     def __get__(
         self,
-        record: Marc21CatalogueRecord | Marc21CatalogueDraft | None,
-        owner: type[Marc21CatalogueRecord | Marc21CatalogueDraft] | None = None,
+        record,  # : Marc21CatalogueRecord | Marc21CatalogueDraft | None,
+        owner=None,  # : type[Marc21CatalogueRecord | Marc21CatalogueDraft] | None = None,
     ) -> bool | Self:
         """Get the persistent identifier."""
         if record is None:
@@ -84,7 +84,7 @@ class CatalogueCheckField(SystemField):
 
     def pre_dump(
         self,
-        record: Marc21CatalogueRecord | Marc21CatalogueDraft,  # type: ignore[override]
+        record,  # : Marc21CatalogueRecord | Marc21CatalogueDraft,  # type: ignore[override]
         data: dict[str, Any],
         dumper: Any | None = None,  # noqa: ANN401, ARG002
     ) -> None:
