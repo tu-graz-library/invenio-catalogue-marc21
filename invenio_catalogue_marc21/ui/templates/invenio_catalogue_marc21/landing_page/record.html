@@ -30,6 +30,8 @@
 {% block record_sidebar %}
     {%- include "invenio_app_rdm/records/details/side_bar/metrics.html" %}
 
+    {%- include "invenio_records_marc21/landing_page/helpers/details.html" %}
+
     <div class="four wide computer sixteen wide tablet column">
         {% if root["pid"] %}
             {% if root["pid"] != parent["pid"] %}

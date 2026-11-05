@@ -111,8 +111,9 @@ def record_detail(
 
     children = _record.children
     serializer = Marc21CatalogueUIJSONSerializer()
-    record_ui = serializer.dump_obj(record.to_dict())
 
+    record_ui = serializer.dump_obj(record.to_dict())
+    print(f"record_detail record_ui: {record_ui["ui"]}")
     # ATTENTION:
     # this one is a quick and dirty fix
     # it should be done in the schema somehow, but since in my point of view

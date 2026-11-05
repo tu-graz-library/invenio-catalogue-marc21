@@ -108,4 +108,6 @@ class MetadataUIField(Field):
             added_entry_personal_name,
         )
 
+        out["license"] = "N/A"
+
         return out
