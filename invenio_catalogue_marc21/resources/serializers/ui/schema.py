@@ -8,6 +8,7 @@ from functools import partial
 from flask_resources import BaseObjectSchema
 from invenio_i18n import get_locale
 from invenio_rdm_records.resources.serializers.ui.fields import AccessStatusField
+from invenio_records_marc21.resources.serializers.ui.metadata import MetadataField
 from marshmallow import post_dump
 from marshmallow_utils.fields import FormatDate as BaseFormatDatetime
 from marshmallow_utils.fields import SanitizedUnicode
@@ -32,6 +33,7 @@ class Marc21CatalogueUISchema(BaseObjectSchema):
     access_status = AccessStatusField(attribute="access", dump_only=True)
 
     metadata = MetadataUIField()
+    # metadata = MetadataField()
 
     created = FormatDatetime(format="long")
 
@@ -40,6 +42,7 @@ class Marc21CatalogueUISchema(BaseObjectSchema):
     @post_dump
     def creators(self, obj: dict, **__: dict) -> dict:
         """Creators post dump."""
+        print(f"Marc21CatalogueUISchema.creators obj: {obj}")
         # the only way to apply metadata to creators too
         obj["creators"] = obj["metadata"]["creators"]
         return obj

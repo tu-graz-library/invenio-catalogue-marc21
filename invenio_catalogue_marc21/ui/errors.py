@@ -10,8 +10,9 @@ from flask_login import current_user
 #
 # Error handlers
 #
-def not_found_error(*_: tuple, **__: dict) -> tuple[str, int]:
+def not_found_error(*args: tuple, **kwargs: dict) -> tuple[str, int]:
     """Handle 'Not Found' errors."""
+    current_app.logger.debug(f"{args}, {kwargs}")
     return render_template(current_app.config["THEME_404_TEMPLATE"]), 404
 
 
