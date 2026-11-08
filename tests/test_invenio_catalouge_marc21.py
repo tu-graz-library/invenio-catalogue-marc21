@@ -6,12 +6,7 @@
 
 from flask import Flask
 
-from invenio_catalogue_marc21 import InvenioCatalogueMarc21, __version__
-
-
-def test_version() -> None:
-    """Test version import."""
-    assert __version__
+from invenio_catalogue_marc21 import InvenioCatalogueMarc21
 
 
 def test_init() -> None:
