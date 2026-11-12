@@ -127,7 +127,14 @@ def record_detail(
         pid=pid_value,
         files=files_dict,
         permissions=record.has_permissions_to(
-            ["edit", "new_version", "manage", "update_draft", "read_files"],
+            [
+                "edit",
+                "new_version",
+                "manage",
+                "update_draft",
+                "read_files",
+                "delete_draft",
+            ],
         ),
         children=children,
         parent=parent,
@@ -182,6 +189,7 @@ def deposit_edit(
     permissions = draft.has_permissions_to(
         [
             "new_version",
+            "delete_draft",
             "showMetadataAccess",
             "showFileAccess",
             "showFileUploader",
