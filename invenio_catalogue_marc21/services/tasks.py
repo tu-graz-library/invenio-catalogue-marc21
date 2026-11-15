@@ -6,7 +6,7 @@
 from csv import DictReader
 from pathlib import Path
 from shutil import copyfileobj
-from tempfile import NamedTemporaryFile
+from tempfile import TemporaryDirectory
 from typing import cast
 from zipfile import ZipFile
 
@@ -54,33 +54,37 @@ def import_from_csv(pid: str, mapper_cls: str) -> None:
                 zip_fp = file__.get_stream("rb")
                 archive = ZipFile(zip_fp)
 
-    for metadata, filename in data_objs:
-        temp_file = NamedTemporaryFile(  # noqa: SIM115
-            delete_on_close=False,
-            suffix=filename,
-        )
-        temp_path = Path(temp_file.name)
+    with TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
 
-        # TODO: catch possible wrong mapping!
-        with cast(ZipFile, archive).open(filename, "r") as fp:
-            copyfileobj(fp, temp_file)
-        temp_file.close()
+        for metadata, filename in data_objs:
+            file_path = temp_path / Path(filename).name
 
-        data = metadata.json
+            # TODO: catch possible wrong mapping!
+            with (
+                cast(ZipFile, archive).open(filename, "r") as src,
+                file_path.open("wb") as dst,
+            ):
+                copyfileobj(src, dst)
 
-        data["catalogue"] = {
-            "root": pid,
-            "parent": pid,
-            "children": [],
-        }
+            data = metadata.json
 
-        create_record(
-            service=records_service,
-            data=data,
-            file_paths=[temp_path],
-            identity=system_identity,
-            do_publish=False,  # True: should that really be true?
-        )
+            data["catalogue"] = {
+                "root": pid,
+                "parent": pid,
+                "children": [],
+            }
+
+            create_record(
+                service=records_service,
+                data=data,
+                file_paths=[file_path],
+                identity=system_identity,
+                do_publish=False,  # True: should that really be true?
+            )
+
+            # this frees the disk space, good for large zip files
+            file_path.unlink()
 
 
 @shared_task
