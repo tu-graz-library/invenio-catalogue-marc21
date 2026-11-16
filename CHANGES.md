@@ -5,6 +5,14 @@ SPDX-License-Identifier: MIT
 
 # Changes
 
+## Version v0.4.0 (released 2026-11-16)
+
+- fix(csv): filename included temp dir
+- chore(setup): relax dependency pins
+- chore(ci): change to organization tests
+- chore(setup): search is only needed for tests
+- feat(deposit): allow delete draft by policy
+
 ## Version v0.3.2 (released 2026-11-04)
 
 - fix(typing): circular import
