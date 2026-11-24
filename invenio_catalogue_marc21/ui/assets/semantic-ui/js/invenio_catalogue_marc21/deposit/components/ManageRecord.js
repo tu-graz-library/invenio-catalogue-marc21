@@ -38,15 +38,6 @@ export class ManageRecord extends Component {
               <SaveButton fluid />
               <PublishButton fluid doiReservationCheck={() => false} />
 
-              {permissions.can_delete_draft && (
-                <DeleteButton
-                  fluid
-                  // TODO: make is_published part of the API response
-                  //       so we don't have to do this
-                  isPublished={record.is_published}
-                />
-              )}
-
               {templates.length > 0 && (
                 <TemplateField
                   label={i18next.t("Templates")}
@@ -82,6 +73,23 @@ export class ManageRecord extends Component {
                 record={record}
                 config={config}
               />
+
+
+
+
+              {permissions.can_delete_draft && (
+                <>
+                  <Divider />
+                  <DeleteButton
+                    fluid
+                    // TODO: make is_published part of the API response
+                    //       so we don't have to do this
+                    isPublished={record.is_published}
+                  />
+                </>
+              )}
+
+
             </Grid.Column>
           </Grid>
         </Card.Content>
