@@ -5,6 +5,13 @@ SPDX-License-Identifier: MIT
 
 # Changes
 
+## Version v0.5.0 (released 2026-11-24)
+
+- feat(ui): publish children cmp
+- fix(prettier): problem added with SPDX update
+- feat(ui): show parent in tree
+- fix(ui): move delete button
+
 ## Version v0.4.0 (released 2026-11-16)
 
 - fix(csv): filename included temp dir
