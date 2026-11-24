@@ -57,4 +57,18 @@ class Marc21CatalogueDepositSchema(BaseObjectSchema):
 
     def create_tree(self, obj: dict, **__: dict) -> dict:
         """Create tree."""
-        return create_tree(obj["catalogue"]["root"], obj["catalogue"]["parent"], obj)
+        root_pid = obj["catalogue"]["root"]
+        parent_pid = obj["catalogue"]["parent"]
+        tree = create_tree(root_pid, parent_pid, obj)
+
+        if parent_pid:
+            return {
+                "name": ["parent"],
+                "node": parent_pid,
+                "self_html": f"/catalogue/uploads/{parent_pid}",
+                "root": "",
+                "parent": "",
+                "children": [tree],
+            }
+
+        return tree
