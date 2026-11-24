@@ -74,9 +74,6 @@ export class ManageRecord extends Component {
                 config={config}
               />
 
-
-
-
               {permissions.can_delete_draft && (
                 <>
                   <Divider />
@@ -88,8 +85,6 @@ export class ManageRecord extends Component {
                   />
                 </>
               )}
-
-
             </Grid.Column>
           </Grid>
         </Card.Content>
