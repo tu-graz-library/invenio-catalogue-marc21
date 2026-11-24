@@ -17,6 +17,7 @@ import { TemplateField } from "@js/invenio_records_marc21/components";
 import { i18next } from "@translations/invenio_catalogue_marc21/i18next";
 
 import { Expandable } from "./../../utils/expandable";
+import { PublishChildren } from "./PublishChildren";
 import { UploadCSV } from "./UploadCSV";
 import { UploadFiles } from "./UploadFiles";
 
@@ -37,6 +38,8 @@ export class ManageRecord extends Component {
             <Grid.Column width={16}>
               <SaveButton fluid />
               <PublishButton fluid doiReservationCheck={() => false} />
+
+              <PublishChildren children={record.children} />
 
               {templates.length > 0 && (
                 <TemplateField
